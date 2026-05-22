@@ -638,7 +638,7 @@ async function saveMealForm(event) {
 
   try {
     await addDoc(collection(db, "users", state.uid, "meals"), mealData);
-    closePortal();
+    closeModal();
   } catch (error) {
     console.error("Error logging meal:", error);
   }
@@ -798,7 +798,7 @@ async function logSelectedFood(mealType) {
 
     try {
       await addDoc(collection(db, "users", state.uid, "meals"), mealData);
-      closePortal();
+      closeModal();
     } catch (error) {
       console.error("Failed to log food:", error);
     }
@@ -836,7 +836,7 @@ async function saveCustomFoodForm(event) {
 
   try {
     await addDoc(collection(db, "users", state.uid, "custom_foods"), foodData);
-    closePortal();
+    closeModal();
   } catch (error) {
     console.error("Failed to create custom food:", error);
   }
@@ -1017,7 +1017,7 @@ async function deleteActiveTask() {
   if (!state.uid || !state.editingTaskId) return;
   try {
     await deleteDoc(doc(db, "users", state.uid, "tasks", state.editingTaskId));
-    closePortal();
+    closeModal();
   } catch (error) {
     console.error("Failed to delete task:", error);
   }
@@ -1047,7 +1047,7 @@ async function saveTaskForm(event) {
       taskData.createdAt = new Date().toISOString();
       await addDoc(collection(db, "users", state.uid, "tasks"), taskData);
     }
-    closePortal();
+    closeModal();
   } catch (error) {
     console.error("Failed to save task:", error);
   }
@@ -1297,7 +1297,7 @@ async function deleteActiveHabit() {
   if (!state.uid || !state.editingHabitId) return;
   try {
     await deleteDoc(doc(db, "users", state.uid, "habits", state.editingHabitId));
-    closePortal();
+    closeModal();
   } catch (error) {
     console.error("Failed to delete habit:", error);
   }
@@ -1323,7 +1323,7 @@ async function saveHabitForm(event) {
       habitData.createdAt = new Date().toISOString();
       await addDoc(collection(db, "users", state.uid, "habits"), habitData);
     }
-    closePortal();
+    closeModal();
   } catch (error) {
     console.error("Failed to save habit:", error);
   }
@@ -1485,7 +1485,7 @@ async function saveTransactionForm(event) {
 
   try {
     await addDoc(collection(db, "users", state.uid, "transactions"), txData);
-    closePortal();
+    closeModal();
   } catch (error) {
     console.error("Failed to log transaction:", error);
   }
@@ -1629,7 +1629,7 @@ async function saveProfileForm(event) {
 
   try {
     await setDoc(doc(db, "users", state.uid, "profile", "config"), profileData);
-    closePortal();
+    closeModal();
   } catch (error) {
     console.error("Failed to update profile config:", error);
   }
@@ -1753,7 +1753,7 @@ async function handleLogin() {
         await linkWithCredential(auth.currentUser, credential);
         alert("Account linked successfully!");
       } catch (err) {
-        if (err.code === "auth/email-already-in-use") {
+        if (err.code === "auth/email-already-in-use" || err.code === "auth/credential-already-in-use") {
           // If already registered, sign in directly (data will merge on Firestore depending on rules/ids, typically user switches to pre-existing UID)
           await signInWithEmailAndPassword(auth, email, password);
           alert("Signed in successfully!");
@@ -1788,10 +1788,15 @@ async function handleSignUp() {
     }
   } catch (error) {
     console.error("Registration failed:", error);
-    if (error.code === "auth/email-already-in-use") {
+    if (error.code === "auth/email-already-in-use" || error.code === "auth/credential-already-in-use") {
       const confirmSignIn = confirm("This email is already registered. Would you like to Sign In instead?");
       if (confirmSignIn) {
-        handleLogin();
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+          alert("Signed in successfully!");
+        } catch (loginErr) {
+          alert("Authentication failed: " + loginErr.message);
+        }
         return;
       }
     }
@@ -1834,7 +1839,7 @@ async function handleOverlaySignUp() {
     alert("Account registered successfully!");
   } catch (error) {
     console.error("Registration failed:", error);
-    if (error.code === "auth/email-already-in-use") {
+    if (error.code === "auth/email-already-in-use" || error.code === "auth/credential-already-in-use") {
       const confirmSignIn = confirm("This email is already registered. Would you like to Sign In instead?");
       if (confirmSignIn) {
         try {
