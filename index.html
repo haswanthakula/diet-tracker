@@ -1207,6 +1207,33 @@
         </form>
       </div>
 
+  <!-- FULL SCREEN AUTH OVERLAY -->
+  <div id="auth-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-background/95 backdrop-blur-md hidden p-4">
+    <div class="bg-surface-container-lowest border border-outline-variant p-8 rounded-2xl shadow-xl w-full max-w-md space-y-6">
+      <div class="text-center space-y-2">
+        <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mx-auto">
+          <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">restaurant</span>
+        </div>
+        <h2 class="font-display-lg text-2xl font-bold text-on-surface">Welcome to OptimaFlow</h2>
+        <p class="text-body-sm text-on-surface-variant">Sign in or register to access your personal management suite.</p>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Email Address</label>
+          <input id="overlay-email" type="email" placeholder="email@example.com" class="w-full px-4 py-2.5 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Password</label>
+          <input id="overlay-password" type="password" placeholder="••••••••" class="w-full px-4 py-2.5 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+        </div>
+
+        <div class="flex flex-col gap-2 pt-2">
+          <button onclick="handleOverlayLogin()" class="w-full bg-primary text-on-primary py-3 rounded-xl font-bold text-body-sm hover:opacity-90 active:scale-95 transition-all">Sign In</button>
+          <button onclick="handleOverlaySignUp()" class="w-full border border-outline-variant text-on-surface py-3 rounded-xl font-bold text-body-sm hover:bg-surface-container transition-all">Register</button>
+          <button id="overlay-guest-btn" onclick="handleOverlayGuest()" class="w-full text-primary py-2 rounded-xl font-bold text-xs hover:underline mt-1">Continue as Guest</button>
+        </div>
+      </div>
     </div>
   </div>
 

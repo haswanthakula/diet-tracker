@@ -175,20 +175,19 @@ onAuthStateChanged(auth, async (user) => {
       document.getElementById("auth-user-email").innerText = user.email;
     }
 
+    // Hide overlay
+    document.getElementById("auth-overlay").classList.add("hidden");
+
     // Set up Firestore real-time snapshots
     setupRealtimeListeners(user.uid);
 
   } else {
-    console.log("No authenticated user, logging in anonymously...");
-    document.getElementById("sync-indicator").className = "w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse";
-    document.getElementById("storage-status-text").innerText = "Connecting...";
-    try {
-      await signInAnonymously(auth);
-    } catch (error) {
-      console.error("Anonymous authentication failed:", error);
-      document.getElementById("sync-indicator").className = "w-2.5 h-2.5 rounded-full bg-rose-500";
-      document.getElementById("storage-status-text").innerText = "Offline Mode";
-    }
+    console.log("No authenticated user, showing auth overlay...");
+    document.getElementById("sync-indicator").className = "w-2.5 h-2.5 rounded-full bg-rose-500";
+    document.getElementById("storage-status-text").innerText = "Logged Out";
+    
+    // Show auth overlay
+    document.getElementById("auth-overlay").classList.remove("hidden");
   }
 });
 
@@ -1789,6 +1788,13 @@ async function handleSignUp() {
     }
   } catch (error) {
     console.error("Registration failed:", error);
+    if (error.code === "auth/email-already-in-use") {
+      const confirmSignIn = confirm("This email is already registered. Would you like to Sign In instead?");
+      if (confirmSignIn) {
+        handleLogin();
+        return;
+      }
+    }
     alert("Registration failed: " + error.message);
   }
 }
@@ -1797,12 +1803,65 @@ window.handleSignUp = handleSignUp;
 async function handleSignOut() {
   try {
     await signOut(auth);
-    alert("Signed out successfully. Returning to guest session...");
+    alert("Signed out successfully!");
   } catch (error) {
     console.error("Sign out failed:", error);
   }
 }
 window.handleSignOut = handleSignOut;
+
+async function handleOverlayLogin() {
+  const email = document.getElementById("overlay-email").value.trim();
+  const password = document.getElementById("overlay-password").value.trim();
+  if (!email || !password) return alert("Please fill out both email and password.");
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    console.error("Login failed:", error);
+    alert("Authentication failed: " + error.message);
+  }
+}
+window.handleOverlayLogin = handleOverlayLogin;
+
+async function handleOverlaySignUp() {
+  const email = document.getElementById("overlay-email").value.trim();
+  const password = document.getElementById("overlay-password").value.trim();
+  if (!email || !password) return alert("Please fill out both email and password.");
+
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    alert("Account registered successfully!");
+  } catch (error) {
+    console.error("Registration failed:", error);
+    if (error.code === "auth/email-already-in-use") {
+      const confirmSignIn = confirm("This email is already registered. Would you like to Sign In instead?");
+      if (confirmSignIn) {
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+        } catch (loginErr) {
+          alert("Authentication failed: " + loginErr.message);
+        }
+        return;
+      }
+    }
+    alert("Registration failed: " + error.message);
+  }
+}
+window.handleOverlaySignUp = handleOverlaySignUp;
+
+async function handleOverlayGuest() {
+  const guestBtn = document.getElementById("overlay-guest-btn");
+  if (guestBtn) guestBtn.innerText = "Connecting...";
+  try {
+    await signInAnonymously(auth);
+  } catch (error) {
+    console.error("Anonymous authentication failed:", error);
+    alert("Guest Mode (Anonymous Sign-In) is currently disabled. Please Register or Sign In with an Email/Password account.");
+    if (guestBtn) guestBtn.innerText = "Continue as Guest";
+  }
+}
+window.handleOverlayGuest = handleOverlayGuest;
 
 // ==========================================
 // MODAL CONTROLLER
