@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OptimaFlow - Task Manager</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=JetBrains+Mono:wght@100..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-container": "#6cf8bb",
+                    "primary": "#3525cd",
+                    "surface-tint": "#4d44e3",
+                    "inverse-on-surface": "#eaf1ff",
+                    "tertiary-fixed": "#ffdbcc",
+                    "surface-container-highest": "#d3e4fe",
+                    "surface-dim": "#cbdbf5",
+                    "inverse-primary": "#c3c0ff",
+                    "on-background": "#0b1c30",
+                    "on-primary-container": "#dad7ff",
+                    "on-tertiary-fixed-variant": "#7b2f00",
+                    "background": "#f8f9ff",
+                    "surface-container-low": "#eff4ff",
+                    "secondary-fixed-dim": "#4edea3",
+                    "on-error-container": "#93000a",
+                    "tertiary": "#7e3000",
+                    "inverse-surface": "#213145",
+                    "surface-variant": "#d3e4fe",
+                    "on-primary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed-dim": "#ffb695",
+                    "on-secondary-fixed": "#002113",
+                    "surface-container-high": "#dce9ff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-error": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed-variant": "#3323cc",
+                    "on-secondary-container": "#00714d",
+                    "outline": "#777587",
+                    "on-primary-fixed": "#0f0069",
+                    "surface-bright": "#f8f9ff",
+                    "secondary-fixed": "#6ffbbe",
+                    "error": "#ba1a1a",
+                    "secondary": "#006c49",
+                    "surface-container": "#e5eeff",
+                    "on-tertiary-fixed": "#351000",
+                    "on-secondary": "#ffffff",
+                    "primary-container": "#4f46e5",
+                    "on-secondary-fixed-variant": "#005236",
+                    "surface": "#f8f9ff",
+                    "primary-fixed-dim": "#c3c0ff",
+                    "on-surface": "#0b1c30",
+                    "on-surface-variant": "#464555",
+                    "tertiary-container": "#a44100",
+                    "outline-variant": "#c7c4d8",
+                    "primary-fixed": "#e2dfff",
+                    "on-tertiary-container": "#ffd2be"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "base": "4px",
+                    "container-padding": "24px",
+                    "stack-sm": "8px",
+                    "stack-lg": "32px",
+                    "gutter": "16px",
+                    "stack-md": "16px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Geist"],
+                    "headline-lg-mobile": ["Geist"],
+                    "headline-md": ["Geist"],
+                    "headline-sm": ["Geist"],
+                    "body-md": ["Geist"],
+                    "display-lg": ["Geist"],
+                    "body-lg": ["Geist"],
+                    "data-mono": ["JetBrains Mono"],
+                    "label-caps": ["Geist"]
+            },
+            "fontSize": {
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["30px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "data-mono": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Geist', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .kanban-column { min-width: 280px; width: 85vw; max-width: 340px; }
+        @media (min-width: 768px) {
+            .kanban-column { min-width: 320px; width: 33.33%; max-width: none; }
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant flex justify-between items-center px-container-padding h-16 transition-opacity">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A high-quality professional headshot of a young creative professional with a friendly expression. The background is a soft, blurred studio setting with clean, minimalist lighting that matches a premium corporate aesthetic. The overall mood is approachable, disciplined, and technologically savvy, reflecting a modern light-mode interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuClaWeISYjQQCa2WWu4SRiyE442P-w2KpHlYh-X3FYGdE7PGbdZ70ZOke0yXiKvnhf-_sTdVZq0Qt1bdoO9NQDQ7Bi-mDQBJ-KZHaAWJBAkeO88BpWAqUtU0o_JFbpyknBvqoHXGQ3xNktzJtNAMPI37qT5oEgdw_6NPooHtipplHmcKs_Vk2AMhVRpmRWVH6X0RVnCBFi1bvS1DKd32_zxtz108UXKB89gkQAeiyA-_YcngbFmAeUq4VmSedrvue2efJd0NTPYTIM"/>
+</div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary">OptimaFlow</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 duration-100" data-icon="settings">settings</button>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="pt-20 pb-24 px-4 md:px-container-padding max-w-7xl mx-auto">
+<!-- Search & Filter Bar -->
+<section class="mb-gutter">
+<div class="flex flex-col md:flex-row gap-stack-sm">
+<div class="relative flex-grow">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-xl text-body-md focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all" placeholder="Search tasks or tags..." type="text"/>
+</div>
+<div class="flex gap-2 overflow-x-auto no-scrollbar py-1">
+<button class="flex items-center gap-1 px-3 py-1.5 bg-primary-container text-on-primary-container rounded-full font-label-caps text-label-caps whitespace-nowrap">
+<span class="material-symbols-outlined text-[14px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">filter_list</span>
+                        ALL TASKS
+                    </button>
+<button class="flex items-center gap-1 px-3 py-1.5 bg-surface-container-low text-on-surface-variant border border-outline-variant rounded-full font-label-caps text-label-caps whitespace-nowrap">
+                        #WORK
+                    </button>
+<button class="flex items-center gap-1 px-3 py-1.5 bg-surface-container-low text-on-surface-variant border border-outline-variant rounded-full font-label-caps text-label-caps whitespace-nowrap">
+                        #URGENT
+                    </button>
+</div>
+</div>
+</section>
+<!-- Kanban Board -->
+<div class="flex md:flex-row gap-gutter overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
+<!-- Column: TO DO -->
+<div class="kanban-column snap-center flex-shrink-0">
+<div class="flex items-center justify-between mb-4 px-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+<h2 class="font-headline-sm text-headline-sm">To Do</h2>
+<span class="px-2 py-0.5 bg-surface-container text-on-surface-variant rounded text-data-mono font-data-mono">3</span>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant">more_horiz</button>
+</div>
+<div class="space-y-stack-md">
+<!-- Task Card 1 -->
+<div class="p-4 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer active:scale-[0.98] duration-100">
+<div class="flex justify-between items-start mb-2">
+<span class="px-2 py-0.5 bg-error-container text-on-error-container rounded text-label-caps font-label-caps">#URGENT</span>
+<span class="material-symbols-outlined text-error text-[20px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">priority_high</span>
+</div>
+<h3 class="font-body-lg text-body-lg font-semibold mb-1">Finalize Q4 Financial Report</h3>
+<p class="text-on-surface-variant text-body-sm line-clamp-2 mb-3">Ensure all expenditure logs are synced and quarterly projections are updated.</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">calendar_today</span>
+<span class="text-data-mono font-data-mono text-on-surface-variant uppercase">OCT 24</span>
+</div>
+<div class="flex items-center gap-1 px-2 py-0.5 bg-surface-container-high rounded text-data-mono font-data-mono text-[10px] text-on-surface-variant border border-outline-variant/30">
+<span class="material-symbols-outlined text-[12px]">sync</span>
+                                GITHUB
+                            </div>
+</div>
+</div>
+<!-- Task Card 2 -->
+<div class="p-4 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer active:scale-[0.98] duration-100">
+<div class="flex justify-between items-start mb-2">
+<span class="px-2 py-0.5 bg-surface-container-high text-on-surface-variant rounded text-label-caps font-label-caps">#PERSONAL</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">low_priority</span>
+</div>
+<h3 class="font-body-lg text-body-lg font-semibold mb-1">Weekly Meal Prep</h3>
+<div class="flex items-center justify-between mt-3">
+<div class="flex -space-x-2">
+<img alt="user" class="w-6 h-6 rounded-full border-2 border-surface" data-alt="A minimalist avatar icon of a young professional with a stylish appearance, presented in a clean, high-density UI layout. The background is neutral white, aligning with a corporate minimalist design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEaXj7m6zsTgiPJ_j7IOlXf8Diutxn3gwGiZFUg_Jdj-yhBxyZXLCduhJ7JqkK0NG292DfDirly3haMK_2NCSpWH5bY9lg5tImJD-B4d2RnklvePp-mrtW2ruyKkk56qKWlBtvOfEHza792pWSEdEbI7CXL0CuLY-fnSoD3L8EKBqE_bjZ9tYIjOLFB93lsyUzIGLq2rACSb-tykFSjsbCfULJ4JYWXkt9xSyq7OUJdCLdJgztgQJGp1nQfwCiL8P_ib5V78nCDU0"/>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">attach_file</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Column: IN PROGRESS -->
+<div class="kanban-column snap-center flex-shrink-0">
+<div class="flex items-center justify-between mb-4 px-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<h2 class="font-headline-sm text-headline-sm">In Progress</h2>
+<span class="px-2 py-0.5 bg-primary-container text-on-primary-container rounded text-data-mono font-data-mono">1</span>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant">more_horiz</button>
+</div>
+<div class="space-y-stack-md">
+<div class="p-4 bg-surface-container-lowest border-l-4 border-l-primary border border-outline-variant rounded-xl shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<span class="px-2 py-0.5 bg-secondary-container text-on-secondary-container rounded text-label-caps font-label-caps">#WORK</span>
+<span class="material-symbols-outlined text-primary text-[20px]">sync</span>
+</div>
+<h3 class="font-body-lg text-body-lg font-semibold mb-1">Mobile UI Refactor</h3>
+<p class="text-on-surface-variant text-body-sm mb-3">Implementing Bento grids and Glassmorphism components.</p>
+<div class="w-full bg-surface-container rounded-full h-1.5 mb-3">
+<div class="bg-primary h-1.5 rounded-full" style="width: 65%"></div>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-data-mono font-data-mono text-[11px] text-primary">65% COMPLETE</span>
+<div class="flex items-center gap-1 px-2 py-0.5 bg-surface-container-high rounded text-data-mono font-data-mono text-[10px] text-on-surface-variant border border-outline-variant/30">
+<span class="material-symbols-outlined text-[12px]">sync</span>
+                                GITHUB
+                            </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Column: DONE -->
+<div class="kanban-column snap-center flex-shrink-0">
+<div class="flex items-center justify-between mb-4 px-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<h2 class="font-headline-sm text-headline-sm">Done</h2>
+<span class="px-2 py-0.5 bg-surface-container text-on-surface-variant rounded text-data-mono font-data-mono">12</span>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant">more_horiz</button>
+</div>
+<div class="space-y-stack-md opacity-70">
+<div class="p-4 bg-surface-container-low border border-outline-variant rounded-xl">
+<div class="flex justify-between items-center mb-2">
+<span class="material-symbols-outlined text-secondary text-[24px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-data-mono font-data-mono text-on-surface-variant text-[11px]">OCT 21</span>
+</div>
+<h3 class="font-body-lg text-body-lg font-semibold line-through text-on-surface-variant">Update Privacy Policy</h3>
+<div class="mt-3 flex items-center gap-2">
+<span class="px-2 py-0.5 bg-surface-container-high text-on-surface-variant rounded text-label-caps font-label-caps">#LEGAL</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- FAB -->
+<button class="fixed bottom-24 right-6 w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform z-50">
+<span class="material-symbols-outlined text-[32px]">add</span>
+</button>
+<!-- BottomNavBar Shell -->
+<nav class="fixed bottom-0 w-full z-50 bg-surface/90 backdrop-blur-md border-t border-outline-variant flex justify-around items-center h-20 px-2 pb-safe">
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-colors active:scale-90 duration-100">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-label-caps text-label-caps mt-1 uppercase">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-colors active:scale-90 duration-100">
+<span class="material-symbols-outlined">restaurant</span>
+<span class="font-label-caps text-label-caps mt-1 uppercase">Log</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 transition-transform active:scale-90 duration-100">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">assignment</span>
+<span class="font-label-caps text-label-caps mt-1 uppercase">Tasks</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-colors active:scale-90 duration-100">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-caps text-label-caps mt-1 uppercase">Wallet</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-colors active:scale-90 duration-100">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-caps text-label-caps mt-1 uppercase">Profile</span>
+</button>
+</nav>
+<script>
+        // Simple haptic-like feedback on FAB and task clicks
+        document.querySelectorAll('button, .cursor-pointer').forEach(el => {
+            el.addEventListener('click', () => {
+                if (window.navigator.vibrate) {
+                    window.navigator.vibrate(5);
+                }
+            });
+        });
+
+        // Search highlight interaction
+        const searchInput = document.querySelector('input');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('scale-[1.01]');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('scale-[1.01]');
+        });
+    </script>
+</body></html>

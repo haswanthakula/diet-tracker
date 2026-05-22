@@ -1,0 +1,11 @@
+{
+  "name": "diet-tracker",
+  "version": "1.0.0",
+  "description": "OptimaFlow Personal Management & Diet Tracker PWA",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx -y http-server -p 8080 -c-1"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

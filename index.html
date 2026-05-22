@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>OptimaFlow - Personal Management & Diet Tracker</title>
+  
+  <!-- Manifest & PWA Tags -->
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="theme-color" content="#3525cd"/>
+  
+  <!-- Tailwind CSS & Google Fonts -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .progress-ring-circle { transition: stroke-dashoffset 0.35s; transform: rotate(-90deg); transform-origin: 50% 50%; }
+    .glass-effect { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+    .kanban-column { min-width: 280px; width: 85vw; max-width: 340px; }
+    @media (min-width: 768px) {
+      .kanban-column { min-width: 300px; width: 33.33%; max-width: none; }
+    }
+    body {
+      min-height: 100vh;
+      font-family: 'Geist', sans-serif;
+    }
+    .data-font {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .heatmap-cell { aspect-ratio: 1; border-radius: 2px; }
+    .heatmap-grid { display: grid; grid-template-columns: repeat(7, 1fr); grid-flow: column; gap: 2px; }
+  </style>
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary-container": "#6cf8bb",
+            "primary": "#3525cd",
+            "surface-tint": "#4d44e3",
+            "inverse-on-surface": "#eaf1ff",
+            "tertiary-fixed": "#ffdbcc",
+            "surface-container-highest": "#d3e4fe",
+            "surface-dim": "#cbdbf5",
+            "inverse-primary": "#c3c0ff",
+            "on-background": "#0b1c30",
+            "on-primary-container": "#dad7ff",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "background": "#f8f9ff",
+            "surface-container-low": "#eff4ff",
+            "secondary-fixed-dim": "#4edea3",
+            "on-error-container": "#93000a",
+            "tertiary": "#7e3000",
+            "inverse-surface": "#213145",
+            "surface-variant": "#d3e4fe",
+            "on-primary": "#ffffff",
+            "on-tertiary": "#ffffff",
+            "tertiary-fixed-dim": "#ffb695",
+            "on-secondary-fixed": "#002113",
+            "surface-container-high": "#dce9ff",
+            "surface-container-lowest": "#ffffff",
+            "on-error": "#ffffff",
+            "error-container": "#ffdad6",
+            "on-primary-fixed-variant": "#3323cc",
+            "on-secondary-container": "#00714d",
+            "outline": "#777587",
+            "on-primary-fixed": "#0f0069",
+            "surface-bright": "#f8f9ff",
+            "secondary-fixed": "#6ffbbe",
+            "error": "#ba1a1a",
+            "secondary": "#006c49",
+            "surface-container": "#e5eeff",
+            "on-tertiary-fixed": "#351000",
+            "on-secondary": "#ffffff",
+            "primary-container": "#4f46e5",
+            "on-secondary-fixed-variant": "#005236",
+            "surface": "#f8f9ff",
+            "primary-fixed-dim": "#c3c0ff",
+            "on-surface": "#0b1c30",
+            "on-surface-variant": "#464555",
+            "tertiary-container": "#a44100",
+            "outline-variant": "#c7c4d8",
+            "primary-fixed": "#e2dfff",
+            "on-tertiary-container": "#ffd2be"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "base": "4px",
+            "container-padding": "24px",
+            "stack-sm": "8px",
+            "stack-lg": "32px",
+            "gutter": "16px",
+            "stack-md": "16px"
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-background text-on-surface flex flex-col min-h-screen pb-24 md:pb-6">
+
+  <!-- TOP APP BAR -->
+  <header class="fixed top-0 w-full z-40 bg-surface/80 glass-effect border-b border-outline-variant flex justify-between items-center px-container-padding h-16">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container flex items-center justify-center">
+        <span class="material-symbols-outlined text-primary text-xl">person</span>
+      </div>
+      <h1 class="font-headline-sm text-[18px] font-bold text-primary">OptimaFlow</h1>
+      <span id="sync-indicator" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" title="Connected to Firebase"></span>
+    </div>
+    <div class="flex items-center gap-4">
+      <span id="user-display-name" class="text-body-sm font-semibold hidden md:inline text-on-surface-variant">Syncing...</span>
+      <button onclick="router('profile')" class="material-symbols-outlined text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 duration-100">settings</button>
+    </div>
+  </header>
+
+  <!-- SIDEBAR NAVIGATION (Desktop) -->
+  <aside class="hidden md:flex fixed left-0 top-16 bottom-0 w-64 flex-col py-6 bg-surface-container-low border-r border-outline-variant">
+    <nav class="flex-1 space-y-1 px-3">
+      <div class="px-3 mb-4">
+        <h3 class="text-label-caps font-semibold text-[10px] text-on-surface-variant tracking-wider uppercase">Menu</h3>
+      </div>
+      <button onclick="router('home')" id="side-nav-home" class="w-full flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors font-medium text-left">
+        <span class="material-symbols-outlined">grid_view</span>
+        <span class="text-body-md">Dashboard</span>
+      </button>
+      <button onclick="router('diet')" id="side-nav-diet" class="w-full flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors font-medium text-left">
+        <span class="material-symbols-outlined">restaurant</span>
+        <span class="text-body-md">Diet & Hydration</span>
+      </button>
+      <button onclick="router('tasks')" id="side-nav-tasks" class="w-full flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors font-medium text-left">
+        <span class="material-symbols-outlined">assignment</span>
+        <span class="text-body-md">Tasks Kanban</span>
+      </button>
+      <button onclick="router('habits')" id="side-nav-habits" class="w-full flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors font-medium text-left">
+        <span class="material-symbols-outlined">auto_awesome</span>
+        <span class="text-body-md">Habits Tracker</span>
+      </button>
+      <button onclick="router('wallet')" id="side-nav-wallet" class="w-full flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors font-medium text-left">
+        <span class="material-symbols-outlined">account_balance_wallet</span>
+        <span class="text-body-md">Wallet & Finance</span>
+      </button>
+      <button onclick="router('profile')" id="side-nav-profile" class="w-full flex items-center gap-3 px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors font-medium text-left">
+        <span class="material-symbols-outlined">person</span>
+        <span class="text-body-md">Profile Goals</span>
+      </button>
+    </nav>
+    <div class="px-6 pt-6 border-t border-outline-variant mt-auto">
+      <p class="text-[10px] text-outline uppercase tracking-wider">Storage Status</p>
+      <p id="storage-status-text" class="text-body-sm font-bold mt-1">Firebase Sync Active</p>
+    </div>
+  </aside>
+
+  <!-- MAIN CANVAS CONTAINER -->
+  <main class="flex-grow pt-20 pb-12 px-4 md:px-container-padding md:ml-64 max-w-7xl mx-auto w-full transition-all">
+
+    <!-- 1. HOME / DASHBOARD VIEW -->
+    <section id="home-view" class="view-section active space-y-stack-lg animate-in fade-in duration-300">
+      <div class="flex flex-col gap-1">
+        <span id="home-today-date" class="text-label-caps font-semibold text-on-surface-variant uppercase tracking-widest text-[11px]">Today</span>
+        <h2 id="home-greeting" class="font-display-lg text-[30px] font-bold text-on-surface">Hello Alex</h2>
+        <p class="font-body-lg text-on-surface-variant max-w-lg">Here is your daily snapshot. Track your habits, budget, tasks, and diet logs.</p>
+      </div>
+
+      <!-- Overview Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+        <!-- Diet & Calories Widget -->
+        <div onclick="router('diet')" class="bg-surface-container-lowest border border-outline-variant p-stack-md rounded-xl shadow-sm hover:shadow-md transition-all group cursor-pointer">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase tracking-wider">DIET STATUS</span>
+            <span class="material-symbols-outlined text-primary">restaurant</span>
+          </div>
+          <h3 class="font-headline-sm font-bold text-lg mb-1 group-hover:text-primary transition-colors">Daily Calories</h3>
+          <div class="flex items-baseline gap-2 mb-2">
+            <span id="home-consumed-calories" class="text-2xl font-bold text-on-surface">0</span>
+            <span class="text-body-sm text-on-surface-variant">/ <span id="home-target-calories">2,000</span> kcal</span>
+          </div>
+          <div class="w-full bg-surface-container rounded-full h-2 overflow-hidden">
+            <div id="home-calories-bar" class="bg-primary h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Tasks Summary Widget -->
+        <div onclick="router('tasks')" class="bg-surface-container-lowest border border-outline-variant p-stack-md rounded-xl shadow-sm hover:shadow-md transition-all group cursor-pointer">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-0.5 bg-amber-500/10 text-amber-700 dark:text-amber-300 text-[10px] font-bold rounded-full uppercase tracking-wider">TASKS</span>
+            <span class="material-symbols-outlined text-amber-500">assignment</span>
+          </div>
+          <h3 class="font-headline-sm font-bold text-lg mb-1 group-hover:text-primary transition-colors">Priority Tasks</h3>
+          <p class="text-body-sm text-on-surface-variant mb-3">You have <span id="home-pending-tasks-count" class="font-bold text-primary">0</span> pending priority tasks remaining today.</p>
+          <div id="home-priority-tasks-list" class="space-y-1.5">
+            <p class="text-body-sm italic text-on-surface-variant">No pending priority tasks</p>
+          </div>
+        </div>
+
+        <!-- Finance Summary Widget -->
+        <div onclick="router('wallet')" class="bg-surface-container-lowest border border-outline-variant p-stack-md rounded-xl shadow-sm hover:shadow-md transition-all group cursor-pointer">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-0.5 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold rounded-full uppercase tracking-wider">FINANCES</span>
+            <span class="material-symbols-outlined text-emerald-600">payments</span>
+          </div>
+          <h3 class="font-headline-sm font-bold text-lg mb-1 group-hover:text-primary transition-colors">Weekly Spending</h3>
+          <div class="flex items-baseline gap-2 mb-2">
+            <span id="home-weekly-spending" class="text-2xl font-bold text-on-surface data-font">$0.00</span>
+            <span class="text-body-sm text-on-surface-variant">spent this week</span>
+          </div>
+          <p id="home-spending-compare" class="text-[11px] font-semibold text-emerald-600 flex items-center gap-0.5">
+            <span class="material-symbols-outlined text-xs">arrow_drop_down</span>
+            Within budget limits
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Actions / Mini Habit list -->
+      <section class="space-y-stack-md">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">auto_awesome</span>
+            <h3 class="font-headline-md text-xl font-bold">Today's Habits</h3>
+          </div>
+          <span id="home-habits-progress" class="text-primary font-bold text-xs uppercase tracking-wider">0/0 Completed</span>
+        </div>
+        <div class="bg-surface-container-low border border-outline-variant rounded-xl p-4 md:p-6">
+          <div id="home-habits-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="col-span-full text-center py-6">
+              <p class="text-body-md text-on-surface-variant italic">No habits configured. Create habits in the Habits tab!</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- 2. DIET & CALORIE TRACKER -->
+    <section id="diet-view" class="view-section space-y-stack-lg animate-in fade-in duration-300">
+      <!-- Title & Timeline -->
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <span class="text-label-caps font-semibold text-on-surface-variant uppercase tracking-widest text-[11px]">Diet & Hydration Log</span>
+          <h2 class="font-display-lg text-[30px] font-bold text-on-surface">Macro & Food Intake</h2>
+        </div>
+        <button onclick="router('recipes')" class="bg-primary text-on-primary px-4 py-2 rounded-xl flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all text-body-md font-semibold">
+          <span class="material-symbols-outlined text-[18px]">menu_book</span>
+          Recipes & Foods
+        </button>
+      </div>
+
+      <!-- Timeline Date Selector -->
+      <section class="overflow-x-auto hide-scrollbar py-2 border-b border-outline-variant">
+        <div id="diet-timeline" class="flex gap-3 items-center min-w-max">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- Macro Dashboard Bento Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+        <!-- Calorie Circular Ring Widget -->
+        <div class="md:col-span-5 bg-surface-container-lowest rounded-xl border border-outline-variant p-6 flex flex-col items-center justify-center relative overflow-hidden">
+          <span class="absolute top-4 right-4 text-[10px] font-bold text-on-surface-variant tracking-wider uppercase">CALORIE SPLIT</span>
+          <div class="relative w-44 h-44 mb-4">
+            <svg class="w-full h-full" viewBox="0 0 100 100">
+              <circle class="text-surface-container-high" cx="50" cy="50" fill="transparent" r="42" stroke="currentColor" stroke-width="8"></circle>
+              <circle id="diet-calorie-progress-circle" class="text-primary progress-ring-circle" cx="50" cy="50" fill="transparent" r="42" stroke="currentColor" stroke-dasharray="263.89" stroke-dashoffset="263.89" stroke-linecap="round" stroke-width="8"></circle>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span id="diet-remaining-kcal" class="text-3xl font-extrabold text-primary">0</span>
+              <span class="text-[9px] font-bold text-on-surface-variant tracking-wider uppercase">KCAL REMAINING</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-8 w-full text-center border-t border-outline-variant/30 pt-4">
+            <div>
+              <span class="block text-[10px] font-bold text-on-surface-variant tracking-wider uppercase">CONSUMED</span>
+              <span id="diet-consumed-kcal" class="text-lg font-bold text-on-surface">0</span>
+            </div>
+            <div>
+              <span class="block text-[10px] font-bold text-on-surface-variant tracking-wider uppercase">DAILY GOAL</span>
+              <span id="diet-target-kcal" class="text-lg font-bold text-secondary">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Macro Stats Rings & Hydration Widget -->
+        <div class="md:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-gutter">
+          <!-- Protein -->
+          <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col items-center justify-between">
+            <span class="text-[10px] font-bold text-on-surface-variant tracking-wider uppercase">PROTEIN</span>
+            <div class="relative w-14 h-14 my-2">
+              <svg class="w-full h-full" viewBox="0 0 40 40">
+                <circle class="text-secondary/10" cx="20" cy="20" fill="transparent" r="16" stroke="currentColor" stroke-width="4"></circle>
+                <circle id="diet-protein-ring" class="text-secondary progress-ring-circle" cx="20" cy="20" fill="transparent" r="16" stroke="currentColor" stroke-dasharray="100.53" stroke-dashoffset="100.53" stroke-linecap="round" stroke-width="4"></circle>
+              </svg>
+              <div id="diet-protein-pct" class="absolute inset-0 flex items-center justify-center font-bold text-xs text-on-surface">0%</div>
+            </div>
+            <span id="diet-protein-g" class="text-xs font-semibold text-on-surface-variant">0g / 0g</span>
+          </div>
+
+          <!-- Carbs -->
+          <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col items-center justify-between">
+            <span class="text-[10px] font-bold text-on-surface-variant tracking-wider uppercase">CARBS</span>
+            <div class="relative w-14 h-14 my-2">
+              <svg class="w-full h-full" viewBox="0 0 40 40">
+                <circle class="text-tertiary-container/10" cx="20" cy="20" fill="transparent" r="16" stroke="currentColor" stroke-width="4"></circle>
+                <circle id="diet-carbs-ring" class="text-tertiary-container progress-ring-circle" cx="20" cy="20" fill="transparent" r="16" stroke="currentColor" stroke-dasharray="100.53" stroke-dashoffset="100.53" stroke-linecap="round" stroke-width="4"></circle>
+              </svg>
+              <div id="diet-carbs-pct" class="absolute inset-0 flex items-center justify-center font-bold text-xs text-on-surface">0%</div>
+            </div>
+            <span id="diet-carbs-g" class="text-xs font-semibold text-on-surface-variant">0g / 0g</span>
+          </div>
+
+          <!-- Fats -->
+          <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col items-center justify-between">
+            <span class="text-[10px] font-bold text-on-surface-variant tracking-wider uppercase">FATS</span>
+            <div class="relative w-14 h-14 my-2">
+              <svg class="w-full h-full" viewBox="0 0 40 40">
+                <circle class="text-tertiary-fixed-dim/20" cx="20" cy="20" fill="transparent" r="16" stroke="currentColor" stroke-width="4"></circle>
+                <circle id="diet-fats-ring" class="text-tertiary-fixed-dim progress-ring-circle" cx="20" cy="20" fill="transparent" r="16" stroke="currentColor" stroke-dasharray="100.53" stroke-dashoffset="100.53" stroke-linecap="round" stroke-width="4"></circle>
+              </svg>
+              <div id="diet-fats-pct" class="absolute inset-0 flex items-center justify-center font-bold text-xs text-on-surface">0%</div>
+            </div>
+            <span id="diet-fats-g" class="text-xs font-semibold text-on-surface-variant">0g / 0g</span>
+          </div>
+
+          <!-- Fiber -->
+          <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col items-center justify-between">
+            <span class="text-[10px] font-bold text-on-surface-variant tracking-wider uppercase">FIBER</span>
+            <div class="relative w-14 h-14 my-2">
+              <svg class="w-full h-full" viewBox="0 0 40 40">
+                <circle class="text-primary-container/10" cx="20" cy="20" fill="transparent" r="16" stroke="currentColor" stroke-width="4"></circle>
+                <circle id="diet-fiber-ring" class="text-primary-container progress-ring-circle" cx="20" cy="20" fill="transparent" r="16" stroke="currentColor" stroke-dasharray="100.53" stroke-dashoffset="100.53" stroke-linecap="round" stroke-width="4"></circle>
+              </svg>
+              <div id="diet-fiber-pct" class="absolute inset-0 flex items-center justify-center font-bold text-xs text-on-surface">0%</div>
+            </div>
+            <span id="diet-fiber-g" class="text-xs font-semibold text-on-surface-variant">0g / 38g</span>
+          </div>
+
+          <!-- Water Tracker -->
+          <div class="col-span-2 sm:col-span-4 bg-surface-container-low border border-outline-variant rounded-xl p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-primary text-2xl">water_drop</span>
+              <div>
+                <span class="block text-[10px] font-bold text-on-surface-variant tracking-wider uppercase">HYDRATION</span>
+                <span id="diet-water-text" class="font-bold text-lg">0.0 / 3.0 L</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <div id="diet-water-bars" class="flex gap-1">
+                <!-- 5 indicator bars -->
+                <div class="w-1.5 h-6 rounded-full bg-surface-container-highest"></div>
+                <div class="w-1.5 h-6 rounded-full bg-surface-container-highest"></div>
+                <div class="w-1.5 h-6 rounded-full bg-surface-container-highest"></div>
+                <div class="w-1.5 h-6 rounded-full bg-surface-container-highest"></div>
+                <div class="w-1.5 h-6 rounded-full bg-surface-container-highest"></div>
+              </div>
+              <button onclick="addWaterLog()" class="ml-2 w-8 h-8 rounded-full border border-primary text-primary flex items-center justify-center hover:bg-primary/5 active:scale-90 transition-all">
+                <span class="material-symbols-outlined text-[18px]">add</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Meal Section Container -->
+      <div class="space-y-6">
+        <!-- Breakfast -->
+        <section class="bg-surface-container-lowest border border-outline-variant p-4 rounded-xl">
+          <div class="flex justify-between items-center mb-3">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-amber-500">wb_twilight</span>
+              <h3 class="font-bold text-sm tracking-wider uppercase text-on-surface">Breakfast</h3>
+              <span id="kcal-breakfast" class="ml-2 px-2 py-0.5 bg-surface-container-high rounded text-[10px] font-bold text-on-surface-variant">0 KCAL</span>
+            </div>
+            <button onclick="openAddMealModal('breakfast')" class="flex items-center gap-1 text-primary hover:bg-primary-container/10 px-3 py-1.5 rounded-full transition-colors active:scale-95">
+              <span class="material-symbols-outlined text-[16px]">add_circle</span>
+              <span class="text-[10px] font-bold tracking-wider uppercase">Add Food</span>
+            </button>
+          </div>
+          <div id="meals-list-breakfast" class="space-y-2">
+            <p class="text-body-sm italic text-on-surface-variant py-2">No items logged</p>
+          </div>
+        </section>
+
+        <!-- Lunch -->
+        <section class="bg-surface-container-lowest border border-outline-variant p-4 rounded-xl">
+          <div class="flex justify-between items-center mb-3">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-secondary">wb_sunny</span>
+              <h3 class="font-bold text-sm tracking-wider uppercase text-on-surface">Lunch</h3>
+              <span id="kcal-lunch" class="ml-2 px-2 py-0.5 bg-surface-container-high rounded text-[10px] font-bold text-on-surface-variant">0 KCAL</span>
+            </div>
+            <button onclick="openAddMealModal('lunch')" class="flex items-center gap-1 text-primary hover:bg-primary-container/10 px-3 py-1.5 rounded-full transition-colors active:scale-95">
+              <span class="material-symbols-outlined text-[16px]">add_circle</span>
+              <span class="text-[10px] font-bold tracking-wider uppercase">Add Food</span>
+            </button>
+          </div>
+          <div id="meals-list-lunch" class="space-y-2">
+            <p class="text-body-sm italic text-on-surface-variant py-2">No items logged</p>
+          </div>
+        </section>
+
+        <!-- Dinner -->
+        <section class="bg-surface-container-lowest border border-outline-variant p-4 rounded-xl">
+          <div class="flex justify-between items-center mb-3">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-indigo-700">dark_mode</span>
+              <h3 class="font-bold text-sm tracking-wider uppercase text-on-surface">Dinner</h3>
+              <span id="kcal-dinner" class="ml-2 px-2 py-0.5 bg-surface-container-high rounded text-[10px] font-bold text-on-surface-variant">0 KCAL</span>
+            </div>
+            <button onclick="openAddMealModal('dinner')" class="flex items-center gap-1 text-primary hover:bg-primary-container/10 px-3 py-1.5 rounded-full transition-colors active:scale-95">
+              <span class="material-symbols-outlined text-[16px]">add_circle</span>
+              <span class="text-[10px] font-bold tracking-wider uppercase">Add Food</span>
+            </button>
+          </div>
+          <div id="meals-list-dinner" class="space-y-2">
+            <p class="text-body-sm italic text-on-surface-variant py-2">No items logged</p>
+          </div>
+        </section>
+
+        <!-- Snacks -->
+        <section class="bg-surface-container-lowest border border-outline-variant p-4 rounded-xl">
+          <div class="flex justify-between items-center mb-3">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-tertiary">restaurant_menu</span>
+              <h3 class="font-bold text-sm tracking-wider uppercase text-on-surface">Snacks</h3>
+              <span id="kcal-snacks" class="ml-2 px-2 py-0.5 bg-surface-container-high rounded text-[10px] font-bold text-on-surface-variant">0 KCAL</span>
+            </div>
+            <button onclick="openAddMealModal('snacks')" class="flex items-center gap-1 text-primary hover:bg-primary-container/10 px-3 py-1.5 rounded-full transition-colors active:scale-95">
+              <span class="material-symbols-outlined text-[16px]">add_circle</span>
+              <span class="text-[10px] font-bold tracking-wider uppercase">Add Food</span>
+            </button>
+          </div>
+          <div id="meals-list-snacks" class="space-y-2">
+            <p class="text-body-sm italic text-on-surface-variant py-2">No items logged</p>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- 3. RECIPES & CUSTOM FOODS SUBVIEW -->
+    <section id="recipes-view" class="view-section space-y-stack-lg animate-in fade-in duration-300">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <span class="text-label-caps font-semibold text-on-surface-variant uppercase tracking-widest text-[11px]">Database & Catalog</span>
+          <h2 class="font-display-lg text-[30px] font-bold text-on-surface">Recipes & Custom Foods</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="openCreateFoodModal()" class="bg-primary text-on-primary px-4 py-2 rounded-xl flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all text-body-md font-semibold">
+            <span class="material-symbols-outlined text-[20px]">add</span>
+            Create Custom Food
+          </button>
+          <button onclick="router('diet')" class="border border-outline-variant bg-surface-container-lowest text-on-surface px-4 py-2 rounded-xl hover:bg-surface-container transition-all text-body-md font-semibold">
+            Back to Log
+          </button>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="relative group">
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors">search</span>
+        <input id="food-search-input" class="w-full pl-12 pr-4 py-3.5 bg-surface-container-lowest border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-on-surface" placeholder="Search system and custom foods..." type="text"/>
+      </div>
+
+      <!-- Category Filter Tabs -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 hide-scrollbar">
+        <button onclick="filterFoods('all')" id="food-tab-all" class="whitespace-nowrap px-5 py-1.5 rounded-full bg-primary text-on-primary font-body-sm shadow-sm transition-all">All Foods</button>
+        <button onclick="filterFoods('custom')" id="food-tab-custom" class="whitespace-nowrap px-5 py-1.5 rounded-full bg-surface-container border border-outline-variant text-on-surface-variant font-body-sm hover:bg-surface-container-high transition-all">Custom Foods</button>
+        <button onclick="filterFoods('system')" id="food-tab-system" class="whitespace-nowrap px-5 py-1.5 rounded-full bg-surface-container border border-outline-variant text-on-surface-variant font-body-sm hover:bg-surface-container-high transition-all">Preset Recipes</button>
+      </div>
+
+      <!-- Food Grid -->
+      <div id="foods-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-gutter">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- 4. TASKS KANBAN BOARD -->
+    <section id="tasks-view" class="view-section space-y-stack-lg animate-in fade-in duration-300">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <span class="text-label-caps font-semibold text-on-surface-variant uppercase tracking-widest text-[11px]">Workflow Manager</span>
+          <h2 class="font-display-lg text-[30px] font-bold text-on-surface">Tasks Kanban</h2>
+        </div>
+        <button onclick="openAddTaskModal()" class="bg-primary text-on-primary px-4 py-2 rounded-xl flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all text-body-md font-semibold">
+          <span class="material-symbols-outlined text-[20px]">add</span>
+          New Task
+        </button>
+      </div>
+
+      <!-- Search & Filter Bar -->
+      <section class="mb-gutter">
+        <div class="flex flex-col md:flex-row gap-stack-sm">
+          <div class="relative flex-grow">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+            <input id="task-search-input" class="w-full pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-xl text-body-md focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all" placeholder="Search tasks or tags..." type="text"/>
+          </div>
+          <div id="task-tag-filters" class="flex gap-2 overflow-x-auto hide-scrollbar py-1">
+            <!-- Dynamic tags -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Kanban Column Grid -->
+      <div class="flex md:flex-row gap-gutter overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-4">
+        <!-- Column: TO DO -->
+        <div class="kanban-column snap-center flex-shrink-0 flex flex-col h-full bg-surface-container-low border border-outline-variant p-4 rounded-xl">
+          <div class="flex items-center justify-between mb-4 px-1">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-outline"></span>
+              <h3 class="font-bold text-sm text-on-surface uppercase tracking-wider">To Do</h3>
+              <span id="task-count-todo" class="px-2 py-0.5 bg-surface-container text-on-surface-variant rounded text-xs font-bold data-font">0</span>
+            </div>
+          </div>
+          <div id="kanban-todo-list" class="space-y-3 flex-grow overflow-y-auto max-h-[60vh] min-h-[300px]">
+            <!-- Injected by JS -->
+          </div>
+        </div>
+
+        <!-- Column: IN PROGRESS -->
+        <div class="kanban-column snap-center flex-shrink-0 flex flex-col h-full bg-surface-container-low border border-outline-variant p-4 rounded-xl">
+          <div class="flex items-center justify-between mb-4 px-1">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+              <h3 class="font-bold text-sm text-on-surface uppercase tracking-wider">In Progress</h3>
+              <span id="task-count-progress" class="px-2 py-0.5 bg-primary-container text-on-primary-container rounded text-xs font-bold data-font">0</span>
+            </div>
+          </div>
+          <div id="kanban-progress-list" class="space-y-3 flex-grow overflow-y-auto max-h-[60vh] min-h-[300px]">
+            <!-- Injected by JS -->
+          </div>
+        </div>
+
+        <!-- Column: DONE -->
+        <div class="kanban-column snap-center flex-shrink-0 flex flex-col h-full bg-surface-container-low border border-outline-variant p-4 rounded-xl">
+          <div class="flex items-center justify-between mb-4 px-1">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+              <h3 class="font-bold text-sm text-on-surface uppercase tracking-wider">Done</h3>
+              <span id="task-count-done" class="px-2 py-0.5 bg-surface-container text-on-surface-variant rounded text-xs font-bold data-font">0</span>
+            </div>
+          </div>
+          <div id="kanban-done-list" class="space-y-3 flex-grow overflow-y-auto max-h-[60vh] min-h-[300px] opacity-75">
+            <!-- Injected by JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. HABITS TRACKER -->
+    <section id="habits-view" class="view-section space-y-stack-lg animate-in fade-in duration-300">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <span class="text-label-caps font-semibold text-on-surface-variant uppercase tracking-widest text-[11px]">Daily Discipline</span>
+          <h2 class="font-display-lg text-[30px] font-bold text-on-surface">Habit Routines</h2>
+        </div>
+        <button onclick="openAddHabitModal()" class="bg-primary text-on-primary px-4 py-2 rounded-xl flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all text-body-md font-semibold">
+          <span class="material-symbols-outlined text-[20px]">add</span>
+          Add Habit
+        </button>
+      </div>
+
+      <!-- Global Consistency Grid -->
+      <section>
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-sm">
+          <div class="flex justify-between items-center mb-4">
+            <div>
+              <span class="text-label-caps font-semibold text-outline text-[10px] tracking-wider">ANNUAL DENSITY</span>
+              <h3 class="font-bold text-lg text-on-surface">Resilience Heatmap</h3>
+            </div>
+            <div class="flex gap-2">
+              <div class="w-3 h-3 rounded-sm bg-surface-container" title="0% Completed"></div>
+              <div class="w-3 h-3 rounded-sm bg-primary/30" title="1-33%"></div>
+              <div class="w-3 h-3 rounded-sm bg-primary/60" title="34-66%"></div>
+              <div class="w-3 h-3 rounded-sm bg-primary" title="67-100%"></div>
+            </div>
+          </div>
+          <div class="overflow-x-auto hide-scrollbar">
+            <div class="flex gap-[2px] min-w-max pb-2">
+              <div id="habits-heatmap-grid" class="heatmap-grid">
+                <!-- Dynamically generated rows of cells -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Habits Cards -->
+      <section id="habits-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+        <!-- Injected by JS -->
+      </section>
+    </section>
+
+    <!-- 6. WALLET & FINANCE ANALYTICS -->
+    <section id="wallet-view" class="view-section space-y-stack-lg animate-in fade-in duration-300">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <span class="text-label-caps font-semibold text-on-surface-variant uppercase tracking-widest text-[11px]">Financial Ledger</span>
+          <h2 class="font-display-lg text-[30px] font-bold text-on-surface">Wallet & Transactions</h2>
+        </div>
+        <button onclick="openAddTransactionModal()" class="bg-primary text-on-primary px-4 py-2 rounded-xl flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all text-body-md font-semibold">
+          <span class="material-symbols-outlined text-[20px]">add</span>
+          Add Transaction
+        </button>
+      </div>
+
+      <!-- Financial Metrics Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-gutter">
+        <div class="bg-surface-container-lowest border border-outline-variant p-5 rounded-xl shadow-sm">
+          <span class="text-label-caps font-semibold text-outline text-[10px] uppercase tracking-wider">Net Balance</span>
+          <p id="wallet-net-balance" class="text-3xl font-extrabold text-primary data-font mt-2">$0.00</p>
+        </div>
+        <div class="bg-surface-container-lowest border border-outline-variant p-5 rounded-xl shadow-sm">
+          <span class="text-label-caps font-semibold text-outline text-[10px] uppercase tracking-wider">Monthly Income</span>
+          <p id="wallet-total-income" class="text-3xl font-bold text-secondary data-font mt-2">+$0.00</p>
+        </div>
+        <div class="bg-surface-container-lowest border border-outline-variant p-5 rounded-xl shadow-sm">
+          <span class="text-label-caps font-semibold text-outline text-[10px] uppercase tracking-wider">Monthly Expenses</span>
+          <p id="wallet-total-expense" class="text-3xl font-bold text-error data-font mt-2">-$0.00</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+        <!-- Pie Chart Mockup / Category List -->
+        <div class="lg:col-span-5 bg-surface-container-lowest border border-outline-variant rounded-xl p-5 flex flex-col justify-between shadow-sm">
+          <h3 class="font-bold text-lg mb-4 text-on-surface flex justify-between items-center">
+            Spending Categories
+            <span class="material-symbols-outlined text-outline">pie_chart</span>
+          </h3>
+          <div class="flex items-center justify-center py-6">
+            <div class="relative w-40 h-40 rounded-full border-[10px] border-surface-container-high flex items-center justify-center">
+              <div class="absolute inset-0 rounded-full border-[10px] border-primary" style="clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 60%, 50% 50%)"></div>
+              <div class="absolute inset-0 rounded-full border-[10px] border-secondary" style="clip-path: polygon(50% 50%, 50% 100%, 0% 100%, 0% 50%, 50% 50%)"></div>
+              <div class="absolute inset-0 rounded-full border-[10px] border-tertiary-container" style="clip-path: polygon(50% 50%, 0% 50%, 0% 0%, 50% 0%, 50% 50%)"></div>
+              <div class="text-center">
+                <span class="block text-[10px] font-bold text-outline uppercase tracking-wider">MONTHLY</span>
+                <span id="wallet-pie-total" class="block font-bold text-lg text-on-surface data-font">$0</span>
+              </div>
+            </div>
+          </div>
+          <div id="wallet-category-ledger" class="space-y-2 mt-4 pt-4 border-t border-outline-variant/30">
+            <!-- Populated by dynamic spending weights -->
+          </div>
+        </div>
+
+        <!-- Transaction Ledger table -->
+        <div class="lg:col-span-7 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm flex flex-col">
+          <div class="px-5 py-4 border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
+            <h3 class="font-bold text-lg text-on-surface">Recent Ledger Entries</h3>
+          </div>
+          <div id="wallet-transactions-list" class="divide-y divide-outline-variant overflow-y-auto max-h-[400px]">
+            <!-- Injected by JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. PROFILE GOALS VIEW -->
+    <section id="profile-view" class="view-section space-y-stack-lg animate-in fade-in duration-300">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-outline-variant pb-6">
+        <div>
+          <span class="text-label-caps font-semibold text-on-surface-variant uppercase tracking-widest text-[11px]">User Settings</span>
+          <h2 id="profile-user-name" class="font-display-lg text-[30px] font-bold text-on-surface">Alex Rivers</h2>
+          <p id="profile-user-membership" class="font-body-md text-on-surface-variant mt-1">28 years old • Premium Sync Plan</p>
+        </div>
+        <button onclick="openEditProfileModal()" class="bg-primary text-on-primary px-6 py-2.5 rounded-xl font-bold text-body-md hover:opacity-90 active:scale-95 transition-all">
+          Edit Body Stats & Goals
+        </button>
+      </div>
+
+      <!-- Bento Metrics Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+        <!-- Body Stats Card -->
+        <div class="md:col-span-8 bg-surface-container-lowest border border-outline-variant p-6 rounded-xl flex flex-col justify-between shadow-sm">
+          <div class="flex justify-between items-start mb-6">
+            <div>
+              <span class="text-label-caps font-semibold text-outline text-[10px] uppercase tracking-wider">Current Body Stats</span>
+              <h3 class="font-bold text-lg mt-1 text-on-surface">Metabolic Metrics</h3>
+            </div>
+            <button onclick="openEditProfileModal()" class="p-2 hover:bg-surface-container rounded-lg transition-colors group">
+              <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">edit</span>
+            </button>
+          </div>
+          <div class="grid grid-cols-2 gap-stack-lg">
+            <div class="flex flex-col">
+              <span class="text-label-caps font-semibold text-outline text-[10px] uppercase tracking-wider">HEIGHT</span>
+              <div class="flex items-baseline gap-1 mt-1">
+                <span id="profile-height" class="text-4xl font-extrabold text-on-surface">0</span>
+                <span class="text-body-sm text-on-surface-variant font-semibold">cm</span>
+              </div>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-label-caps font-semibold text-outline text-[10px] uppercase tracking-wider">WEIGHT</span>
+              <div class="flex items-baseline gap-1 mt-1">
+                <span id="profile-weight" class="text-4xl font-extrabold text-on-surface">0</span>
+                <span class="text-body-sm text-on-surface-variant font-semibold">kg</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-8 pt-5 border-t border-outline-variant flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+              <span id="profile-bmi" class="text-body-sm font-semibold text-on-surface-variant">BMI: 0.0 (Uncalculated)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Target Goal Card -->
+        <div class="md:col-span-4 bg-primary text-on-primary p-6 rounded-xl relative overflow-hidden flex flex-col justify-between shadow-sm">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+          <div class="z-10">
+            <div class="flex justify-between items-start">
+              <span class="text-label-caps text-on-primary-container text-[10px] font-bold uppercase tracking-wider">Objective</span>
+              <button onclick="openEditProfileModal()" class="p-1.5 hover:bg-white/10 rounded-lg transition-colors">
+                <span class="material-symbols-outlined text-on-primary text-lg">edit</span>
+              </button>
+            </div>
+            <h3 id="profile-goal-title" class="font-bold text-xl mt-3">Target Objective</h3>
+          </div>
+          <div class="z-10 mt-6">
+            <div class="flex justify-between text-on-primary/80 mb-2 text-xs font-semibold">
+              <span class="text-[11px]">Weight Progress</span>
+              <span id="profile-goal-pct" class="text-[11px]">0%</span>
+            </div>
+            <div class="w-full h-2 bg-white/20 rounded-full overflow-hidden">
+              <div id="profile-goal-bar" class="bg-secondary-container h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="z-10 mt-4 flex items-center gap-2 text-xs font-semibold text-on-primary/95">
+            <span class="material-symbols-outlined text-sm">trending_up</span>
+            <span id="profile-goal-desc">Target: --</span>
+          </div>
+        </div>
+
+        <!-- Nutrition Macro Strategy Card -->
+        <div class="md:col-span-4 bg-surface-container-lowest border border-outline-variant p-6 rounded-xl shadow-sm">
+          <div class="flex justify-between items-start mb-4">
+            <span class="text-label-caps font-semibold text-outline text-[10px] uppercase tracking-wider">Dietary Strategy</span>
+          </div>
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-tertiary-fixed flex items-center justify-center">
+              <span class="material-symbols-outlined text-tertiary text-2xl">nutrition</span>
+            </div>
+            <div>
+              <p id="profile-dietary-strategy" class="font-bold text-on-surface text-base">Standard Balanced</p>
+              <p class="text-body-sm text-on-surface-variant font-medium">Dietary Approach</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span id="profile-chip-1" class="bg-surface-container-high px-3 py-1 rounded-full text-[10px] font-bold text-on-surface-variant tracking-wider uppercase">HIGH-PROTEIN</span>
+            <span id="profile-chip-2" class="bg-surface-container-high px-3 py-1 rounded-full text-[10px] font-bold text-on-surface-variant tracking-wider uppercase">TRACKED</span>
+          </div>
+        </div>
+
+        <!-- Macro Percentages Target Card -->
+        <div class="md:col-span-8 bg-surface-container-lowest border border-outline-variant p-6 rounded-xl shadow-sm">
+          <div class="flex justify-between items-start mb-6">
+            <div>
+              <span class="text-label-caps font-semibold text-outline text-[10px] uppercase tracking-wider">Target Calories & Splits</span>
+              <h3 id="profile-target-cal-text" class="font-bold text-2xl mt-1 text-on-surface">2,000 kcal</h3>
+            </div>
+            <button onclick="openEditProfileModal()" class="p-2 hover:bg-surface-container rounded-lg transition-colors">
+              <span class="material-symbols-outlined text-outline">edit</span>
+            </button>
+          </div>
+          <div class="grid grid-cols-3 gap-stack-md">
+            <!-- Protein split -->
+            <div class="space-y-2">
+              <div class="flex justify-between items-center text-xs font-semibold">
+                <span class="text-on-surface">Protein</span>
+                <span id="profile-pct-p-text" class="text-outline">0%</span>
+              </div>
+              <div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+                <div id="profile-bar-p" class="bg-primary h-full rounded-full transition-all" style="width: 0%"></div>
+              </div>
+            </div>
+            <!-- Carbs split -->
+            <div class="space-y-2">
+              <div class="flex justify-between items-center text-xs font-semibold">
+                <span class="text-on-surface">Carbs</span>
+                <span id="profile-pct-c-text" class="text-outline">0%</span>
+              </div>
+              <div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+                <div id="profile-bar-c" class="bg-secondary h-full rounded-full transition-all" style="width: 0%"></div>
+              </div>
+            </div>
+            <!-- Fats split -->
+            <div class="space-y-2">
+              <div class="flex justify-between items-center text-xs font-semibold">
+                <span class="text-on-surface">Fats</span>
+                <span id="profile-pct-f-text" class="text-outline">0%</span>
+              </div>
+              <div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+                <div id="profile-bar-f" class="bg-tertiary-container h-full rounded-full transition-all" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account Settings & Sync -->
+      <section class="bg-surface-container-lowest border border-outline-variant p-6 rounded-xl shadow-sm">
+        <h3 class="font-bold text-lg mb-2 text-on-surface">Cloud Authentication & Backup</h3>
+        <p class="text-body-sm text-on-surface-variant mb-6">Create an account to securely save and back up your logs across devices.</p>
+        
+        <div id="auth-logged-out" class="space-y-4 max-w-sm">
+          <div>
+            <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Email Address</label>
+            <input id="auth-email" type="email" placeholder="email@example.com" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Password</label>
+            <input id="auth-password" type="password" placeholder="••••••••" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+          </div>
+          <div class="flex gap-2 pt-2">
+            <button onclick="handleLogin()" class="flex-1 bg-primary text-on-primary py-2.5 rounded-xl font-bold text-body-sm hover:opacity-90 active:scale-95 transition-all">Sign In</button>
+            <button onclick="handleSignUp()" class="flex-1 border border-outline-variant text-on-surface py-2.5 rounded-xl font-bold text-body-sm hover:bg-surface-container transition-all">Register</button>
+          </div>
+        </div>
+
+        <div id="auth-logged-in" class="hidden flex items-center justify-between">
+          <div>
+            <p class="font-bold text-on-surface">Signed In Securely</p>
+            <p id="auth-user-email" class="text-body-sm text-on-surface-variant font-semibold">user@example.com</p>
+          </div>
+          <button onclick="handleSignOut()" class="border border-error text-error px-4 py-2 rounded-xl text-body-sm font-bold hover:bg-error/5 active:scale-95 transition-all">Sign Out</button>
+        </div>
+      </section>
+    </section>
+
+  </main>
+
+  <!-- MOBILE BOTTOM NAVIGATION -->
+  <nav class="md:hidden fixed bottom-0 w-full z-40 pb-safe bg-surface/90 glass-effect border-t border-outline-variant flex justify-around items-center h-16 px-1">
+    <button onclick="router('home')" id="bottom-nav-home" class="flex flex-col items-center justify-center text-on-surface-variant flex-1 py-1 active:scale-90 transition-transform">
+      <span class="material-symbols-outlined text-[20px]">grid_view</span>
+      <span class="text-[9px] font-bold tracking-wider mt-0.5 uppercase">Home</span>
+    </button>
+    <button onclick="router('diet')" id="bottom-nav-diet" class="flex flex-col items-center justify-center text-on-surface-variant flex-1 py-1 active:scale-90 transition-transform">
+      <span class="material-symbols-outlined text-[20px]">restaurant</span>
+      <span class="text-[9px] font-bold tracking-wider mt-0.5 uppercase">Log</span>
+    </button>
+    <button onclick="router('tasks')" id="bottom-nav-tasks" class="flex flex-col items-center justify-center text-on-surface-variant flex-1 py-1 active:scale-90 transition-transform">
+      <span class="material-symbols-outlined text-[20px]">assignment</span>
+      <span class="text-[9px] font-bold tracking-wider mt-0.5 uppercase">Tasks</span>
+    </button>
+    <button onclick="router('habits')" id="bottom-nav-habits" class="flex flex-col items-center justify-center text-on-surface-variant flex-1 py-1 active:scale-90 transition-transform">
+      <span class="material-symbols-outlined text-[20px]">auto_awesome</span>
+      <span class="text-[9px] font-bold tracking-wider mt-0.5 uppercase">Habits</span>
+    </button>
+    <button onclick="router('wallet')" id="bottom-nav-wallet" class="flex flex-col items-center justify-center text-on-surface-variant flex-1 py-1 active:scale-90 transition-transform">
+      <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+      <span class="text-[9px] font-bold tracking-wider mt-0.5 uppercase">Wallet</span>
+    </button>
+  </nav>
+
+  <!-- PWA INSTALL BANNER -->
+  <div id="pwa-install-banner" class="fixed bottom-20 left-4 right-4 md:left-auto md:right-4 md:bottom-4 md:w-80 bg-primary-container text-on-primary-container p-4 rounded-xl shadow-lg border border-primary/20 flex flex-col gap-2.5 z-[100] hidden animate-bounce">
+    <div class="flex justify-between items-start">
+      <div>
+        <h4 class="font-bold text-sm">Download App</h4>
+        <p class="text-xs opacity-90 mt-0.5">Install OptimaFlow to your mobile home screen for offline access and quick tracking.</p>
+      </div>
+      <button onclick="hidePwaInstallBanner()" class="material-symbols-outlined text-sm hover:opacity-75">close</button>
+    </div>
+    <button onclick="triggerPwaInstall()" class="w-full bg-primary text-on-primary py-2 rounded-lg font-bold text-xs hover:opacity-90 active:scale-95 transition-all text-center">Install App</button>
+  </div>
+
+  <!-- MODALS PORTAL -->
+  <div id="modal-portal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-on-background/40 backdrop-blur-sm hidden opacity-0 transition-all duration-300">
+    <div id="modal-content" class="bg-surface-container-lowest border border-outline-variant rounded-3xl w-full max-w-md overflow-hidden shadow-2xl scale-90 transition-transform duration-300">
+      
+      <!-- ADD/EDIT MEAL FORM MODAL -->
+      <div id="modal-meal-form" class="hidden">
+        <form onsubmit="saveMealForm(event)" class="flex flex-col">
+          <div class="p-6 border-b border-outline-variant">
+            <h4 class="font-bold text-lg text-on-surface" id="meal-form-title">Log Meal Entry</h4>
+            <span id="meal-form-subtype" class="text-xs font-bold text-primary uppercase tracking-wider">Breakfast</span>
+          </div>
+          <div class="p-6 space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Food Item Name</label>
+              <input required id="meal-food-name" type="text" placeholder="e.g. Oatmeal bowl" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Calories (Kcal)</label>
+                <input required id="meal-calories" type="number" placeholder="250" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Protein (g)</label>
+                <input required id="meal-protein" type="number" placeholder="12" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Carbs (g)</label>
+                <input required id="meal-carbs" type="number" placeholder="35" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Fats (g)</label>
+                <input required id="meal-fats" type="number" placeholder="5" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+              </div>
+              <div class="col-span-2">
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Fiber (g) - Optional</label>
+                <input id="meal-fiber" type="number" placeholder="6" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+              </div>
+            </div>
+          </div>
+          <div class="p-6 bg-surface-container-low border-t border-outline-variant flex gap-3">
+            <button type="button" onclick="closePortal()" class="flex-1 py-2.5 border border-outline-variant text-on-surface rounded-xl font-semibold hover:bg-surface-container active:scale-95 transition-all text-center">Cancel</button>
+            <button type="submit" class="flex-1 py-2.5 bg-primary text-on-primary rounded-xl font-bold hover:opacity-90 active:scale-95 transition-all text-center">Save Log</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- CREATE CUSTOM FOOD MODAL -->
+      <div id="modal-create-food" class="hidden">
+        <form onsubmit="saveCustomFoodForm(event)" class="flex flex-col">
+          <div class="p-6 border-b border-outline-variant">
+            <h4 class="font-bold text-lg text-on-surface">Create Custom Food</h4>
+          </div>
+          <div class="p-6 space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Food / Recipe Title</label>
+              <input required id="custom-food-name" type="text" placeholder="e.g. Avocado Salmon Wrap" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Calories (Kcal)</label>
+                <input required id="custom-food-calories" type="number" placeholder="450" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Protein (g)</label>
+                <input required id="custom-food-protein" type="number" placeholder="25" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Carbs (g)</label>
+                <input required id="custom-food-carbs" type="number" placeholder="30" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Fats (g)</label>
+                <input required id="custom-food-fats" type="number" placeholder="18" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Image URL (Optional)</label>
+              <input id="custom-food-img" type="text" placeholder="https://..." class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+            </div>
+          </div>
+          <div class="p-6 bg-surface-container-low border-t border-outline-variant flex gap-3">
+            <button type="button" onclick="closePortal()" class="flex-1 py-2.5 border border-outline-variant text-on-surface rounded-xl font-semibold hover:bg-surface-container active:scale-95 transition-all text-center">Cancel</button>
+            <button type="submit" class="flex-1 py-2.5 bg-primary text-on-primary rounded-xl font-bold hover:opacity-90 active:scale-95 transition-all text-center">Create</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- LOG MEAL FROM LIST OVERLAY -->
+      <div id="modal-log-selector" class="hidden">
+        <div class="p-6 border-b border-outline-variant">
+          <h4 class="font-bold text-lg text-on-surface">Log Food Entry</h4>
+          <p id="log-selector-food-name" class="text-primary font-bold text-sm mt-1">Greek Yogurt Bowl</p>
+        </div>
+        <div class="p-3 space-y-1">
+          <button onclick="logSelectedFood('breakfast')" class="w-full flex items-center justify-between p-3.5 hover:bg-surface-container rounded-2xl transition-colors">
+            <div class="flex items-center gap-3.5">
+              <span class="material-symbols-outlined text-primary">wb_twilight</span>
+              <span class="font-semibold text-body-md text-on-surface">Breakfast</span>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+          </button>
+          <button onclick="logSelectedFood('lunch')" class="w-full flex items-center justify-between p-3.5 hover:bg-surface-container rounded-2xl transition-colors">
+            <div class="flex items-center gap-3.5">
+              <span class="material-symbols-outlined text-primary">wb_sunny</span>
+              <span class="font-semibold text-body-md text-on-surface">Lunch</span>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+          </button>
+          <button onclick="logSelectedFood('dinner')" class="w-full flex items-center justify-between p-3.5 hover:bg-surface-container rounded-2xl transition-colors">
+            <div class="flex items-center gap-3.5">
+              <span class="material-symbols-outlined text-primary">dark_mode</span>
+              <span class="font-semibold text-body-md text-on-surface">Dinner</span>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+          </button>
+          <button onclick="logSelectedFood('snacks')" class="w-full flex items-center justify-between p-3.5 hover:bg-surface-container rounded-2xl transition-colors">
+            <div class="flex items-center gap-3.5">
+              <span class="material-symbols-outlined text-primary">restaurant_menu</span>
+              <span class="font-semibold text-body-md text-on-surface">Snacks</span>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+          </button>
+        </div>
+        <div class="p-6 bg-surface-container-low border-t border-outline-variant">
+          <button onclick="closePortal()" class="w-full py-2.5 border border-outline-variant text-on-surface rounded-xl font-semibold hover:bg-surface-container active:scale-95 transition-all text-center">Cancel</button>
+        </div>
+      </div>
+
+      <!-- KANBAN ADD/EDIT TASK MODAL -->
+      <div id="modal-task-form" class="hidden">
+        <form onsubmit="saveTaskForm(event)" class="flex flex-col">
+          <div class="p-6 border-b border-outline-variant">
+            <h4 class="font-bold text-lg text-on-surface" id="task-form-title">Create Kanban Task</h4>
+          </div>
+          <div class="p-6 space-y-4">
+            <input type="hidden" id="task-id"/>
+            <div>
+              <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Task Title</label>
+              <input required id="task-title" type="text" placeholder="e.g. Prepare presentation slides" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Description</label>
+              <textarea id="task-description" placeholder="Provide background context and detailed requirements..." class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md h-20"></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Status</label>
+                <select id="task-status" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md">
+                  <option value="todo">To Do</option>
+                  <option value="progress">In Progress</option>
+                  <option value="done">Done</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Priority</label>
+                <select id="task-priority" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md">
+                  <option value="low">Low Priority</option>
+                  <option value="medium">Medium Priority</option>
+                  <option value="high">High Priority</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Tag / Label</label>
+                <input id="task-tag" type="text" placeholder="e.g. WORK" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Due Date</label>
+                <input id="task-due-date" type="date" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+              </div>
+            </div>
+          </div>
+          <div class="p-6 bg-surface-container-low border-t border-outline-variant flex gap-3">
+            <button id="task-delete-btn" type="button" onclick="deleteActiveTask()" class="hidden px-4 py-2.5 border border-error text-error rounded-xl font-bold hover:bg-error/5 active:scale-95 transition-all text-center">Delete</button>
+            <button type="button" onclick="closePortal()" class="flex-1 py-2.5 border border-outline-variant text-on-surface rounded-xl font-semibold hover:bg-surface-container active:scale-95 transition-all text-center">Cancel</button>
+            <button type="submit" class="flex-1 py-2.5 bg-primary text-on-primary rounded-xl font-bold hover:opacity-90 active:scale-95 transition-all text-center">Save Task</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- HABITS FORM MODAL -->
+      <div id="modal-habit-form" class="hidden">
+        <form onsubmit="saveHabitForm(event)" class="flex flex-col">
+          <div class="p-6 border-b border-outline-variant">
+            <h4 class="font-bold text-lg text-on-surface" id="habit-form-title">Add Habit Routine</h4>
+          </div>
+          <div class="p-6 space-y-4">
+            <input type="hidden" id="habit-id"/>
+            <div>
+              <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Habit Title</label>
+              <input required id="habit-title" type="text" placeholder="e.g. Read 20 Pages" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Description / Frequency</label>
+              <input required id="habit-desc" type="text" placeholder="e.g. Daily before bed" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Icon Category</label>
+              <select id="habit-icon" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md">
+                <option value="water_drop">Water Drop (Hydration)</option>
+                <option value="fitness_center">Fitness Center (Gym/Stretch)</option>
+                <option value="book_2">Book (Reading/Study)</option>
+                <option value="meditation">Self Improvement (Meditate)</option>
+                <option value="auto_awesome">Resilience (Check/Posture)</option>
+              </select>
+            </div>
+          </div>
+          <div class="p-6 bg-surface-container-low border-t border-outline-variant flex gap-3">
+            <button id="habit-delete-btn" type="button" onclick="deleteActiveHabit()" class="hidden px-4 py-2.5 border border-error text-error rounded-xl font-bold hover:bg-error/5 active:scale-95 transition-all text-center">Delete</button>
+            <button type="button" onclick="closePortal()" class="flex-1 py-2.5 border border-outline-variant text-on-surface rounded-xl font-semibold hover:bg-surface-container active:scale-95 transition-all text-center">Cancel</button>
+            <button type="submit" class="flex-1 py-2.5 bg-primary text-on-primary rounded-xl font-bold hover:opacity-90 active:scale-95 transition-all text-center">Save Habit</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- ADD TRANSACTION MODAL -->
+      <div id="modal-transaction-form" class="hidden">
+        <form onsubmit="saveTransactionForm(event)" class="flex flex-col">
+          <div class="p-6 border-b border-outline-variant">
+            <h4 class="font-bold text-lg text-on-surface">Log Transaction</h4>
+          </div>
+          <div class="p-6 space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Payee / Description</label>
+              <input required id="tx-payee" type="text" placeholder="e.g. Whole Foods Market" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Amount ($)</label>
+                <input required id="tx-amount" type="number" step="0.01" placeholder="85.50" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Flow Type</label>
+                <select id="tx-type" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md">
+                  <option value="expense">Expense</option>
+                  <option value="income">Income</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Category</label>
+                <select id="tx-category" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md">
+                  <option value="Food">Food / Groceries</option>
+                  <option value="Housing">Housing / Rent</option>
+                  <option value="Lifestyle">Lifestyle / Leisure</option>
+                  <option value="Other">Other Expenses</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Date</label>
+                <input id="tx-date" type="date" required class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+              </div>
+            </div>
+          </div>
+          <div class="p-6 bg-surface-container-low border-t border-outline-variant flex gap-3">
+            <button type="button" onclick="closePortal()" class="flex-1 py-2.5 border border-outline-variant text-on-surface rounded-xl font-semibold hover:bg-surface-container active:scale-95 transition-all text-center">Cancel</button>
+            <button type="submit" class="flex-1 py-2.5 bg-primary text-on-primary rounded-xl font-bold hover:opacity-90 active:scale-95 transition-all text-center">Log Transaction</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- EDIT PROFILE stats MODAL -->
+      <div id="modal-profile-form" class="hidden">
+        <form onsubmit="saveProfileForm(event)" class="flex flex-col">
+          <div class="p-6 border-b border-outline-variant">
+            <h4 class="font-bold text-lg text-on-surface">Update Body Stats & Goals</h4>
+          </div>
+          <div class="p-6 space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Height (cm)</label>
+                <input required id="p-height" type="number" placeholder="182" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Weight (kg)</label>
+                <input required id="p-weight" type="number" step="0.1" placeholder="76.4" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+              </div>
+              <div class="col-span-2">
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Primary Objective</label>
+                <input required id="p-goal-title" type="text" placeholder="e.g. Lean Muscle Gain" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Target Weight (kg)</label>
+                <input required id="p-target-weight" type="number" step="0.1" placeholder="80" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Strategy Rate</label>
+                <input required id="p-goal-desc" type="text" placeholder="e.g. +0.5kg / week" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+              </div>
+              <div class="col-span-2">
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Dietary Strategy Description</label>
+                <input required id="p-diet-strategy" type="text" placeholder="e.g. Intermittent Fasting (16:8)" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+              </div>
+              <div class="col-span-2">
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Daily Target Calories (Kcal)</label>
+                <input required id="p-target-cal" type="number" placeholder="2850" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none text-body-md"/>
+              </div>
+            </div>
+            
+            <div class="border-t border-outline-variant pt-4">
+              <span class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Macro Target Splits (%)</span>
+              <div class="grid grid-cols-3 gap-2">
+                <div>
+                  <label class="block text-[10px] text-outline font-semibold mb-0.5">Protein</label>
+                  <input required id="p-macro-p" type="number" placeholder="35" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary outline-none text-body-sm"/>
+                </div>
+                <div>
+                  <label class="block text-[10px] text-outline font-semibold mb-0.5">Carbs</label>
+                  <input required id="p-macro-c" type="number" placeholder="45" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary outline-none text-body-sm"/>
+                </div>
+                <div>
+                  <label class="block text-[10px] text-outline font-semibold mb-0.5">Fats</label>
+                  <input required id="p-macro-f" type="number" placeholder="20" class="w-full px-3 py-2 border border-outline-variant bg-surface rounded-xl focus:border-primary outline-none text-body-sm"/>
+                </div>
+              </div>
+              <span id="p-macro-total" class="block text-[10px] mt-1.5 font-bold text-emerald-600">Total: 100%</span>
+            </div>
+          </div>
+          <div class="p-6 bg-surface-container-low border-t border-outline-variant flex gap-3">
+            <button type="button" onclick="closePortal()" class="flex-1 py-2.5 border border-outline-variant text-on-surface rounded-xl font-semibold hover:bg-surface-container active:scale-95 transition-all text-center">Cancel</button>
+            <button type="submit" class="flex-1 py-2.5 bg-primary text-on-primary rounded-xl font-bold hover:opacity-90 active:scale-95 transition-all text-center">Update Stats</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Main JavaScript App module -->
+  <script type="module" src="app.js"></script>
+
+</body>
+</html>

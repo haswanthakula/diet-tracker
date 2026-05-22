@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>OptimaFlow - Recipes &amp; Foods</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=JetBrains+Mono:wght@100..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .recipe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+        @media (max-width: 640px) {
+            .recipe-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .glass-card {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-container": "#6cf8bb",
+                        "primary": "#3525cd",
+                        "surface-tint": "#4d44e3",
+                        "inverse-on-surface": "#eaf1ff",
+                        "tertiary-fixed": "#ffdbcc",
+                        "surface-container-highest": "#d3e4fe",
+                        "surface-dim": "#cbdbf5",
+                        "inverse-primary": "#c3c0ff",
+                        "on-background": "#0b1c30",
+                        "on-primary-container": "#dad7ff",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "background": "#f8f9ff",
+                        "surface-container-low": "#eff4ff",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#7e3000",
+                        "inverse-surface": "#213145",
+                        "surface-variant": "#d3e4fe",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "on-secondary-fixed": "#002113",
+                        "surface-container-high": "#dce9ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "on-secondary-container": "#00714d",
+                        "outline": "#777587",
+                        "on-primary-fixed": "#0f0069",
+                        "surface-bright": "#f8f9ff",
+                        "secondary-fixed": "#6ffbbe",
+                        "error": "#ba1a1a",
+                        "secondary": "#006c49",
+                        "surface-container": "#e5eeff",
+                        "on-tertiary-fixed": "#351000",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#4f46e5",
+                        "on-secondary-fixed-variant": "#005236",
+                        "surface": "#f8f9ff",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "on-surface": "#0b1c30",
+                        "on-surface-variant": "#464555",
+                        "tertiary-container": "#a44100",
+                        "outline-variant": "#c7c4d8",
+                        "primary-fixed": "#e2dfff",
+                        "on-tertiary-container": "#ffd2be"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "container-padding": "24px",
+                        "stack-sm": "8px",
+                        "stack-lg": "32px",
+                        "gutter": "16px",
+                        "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "headline-sm": ["Geist"],
+                        "body-md": ["Geist"],
+                        "display-lg": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "data-mono": ["JetBrains Mono"],
+                        "label-caps": ["Geist"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["30px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "data-mono": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md overflow-x-hidden">
+<!-- Top App Bar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant flex justify-between items-center px-container-padding h-16 w-full transition-all duration-300">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center overflow-hidden">
+<img alt="user_profile_photo" class="w-full h-full object-cover" data-alt="A professional headshot of a young man with a friendly expression, captured with soft, natural lighting in a clean, modern studio. The background is a soft, out-of-focus neutral grey, emphasizing the subject's clean-cut appearance. The style is polished and high-end, fitting for a premium life management application's user profile." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXTV38hMsuBZSZ9f-ATQeIfnIPKIVSbPu82zJGzgAP3p_5BPqx8XAdClO2hcSndLdOvTVLRylbnhyAE1CB4UGf3nTbeyNXX7ikxV_vj6Ka_buzLOwhvyDV7TpxtvaJ98IkZtA6A_ccoOciEoftmxplE1ib3-sp9eBFpIwfXDoZcZFHWuJ5P8xQCQVQfOGG0STC2Dqz4YkcYHS8Z_2NegJTeTanLn5EwnU1P9vvUvXyyWOpO1G0AikWM1AKpxSsJGszVSlFK6NQLs0"/>
+</div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">OptimaFlow</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-primary hover:opacity-80 active:scale-95 duration-100 transition-opacity">settings</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-32 px-container-padding max-w-7xl mx-auto min-h-screen">
+<!-- Search & Filter Header -->
+<section class="mb-stack-lg space-y-gutter">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<h2 class="font-headline-md text-headline-md text-on-surface">Recipes &amp; Custom Foods</h2>
+<div class="flex items-center gap-2">
+<button class="bg-primary text-on-primary px-4 py-2 rounded-xl flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span class="font-body-md">Create Custom</span>
+</button>
+</div>
+</div>
+<!-- Search Bar -->
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full pl-12 pr-4 py-4 bg-surface-container-lowest border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-on-surface" placeholder="Search meals, recipes, or ingredients..." type="text"/>
+</div>
+<!-- Category Filters -->
+<div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
+<button class="whitespace-nowrap px-6 py-2 rounded-full bg-primary text-on-primary font-body-md shadow-sm">All Foods</button>
+<button class="whitespace-nowrap px-6 py-2 rounded-full bg-surface-container border border-outline-variant text-on-surface-variant font-body-md hover:bg-surface-container-high transition-colors">Meals</button>
+<button class="whitespace-nowrap px-6 py-2 rounded-full bg-surface-container border border-outline-variant text-on-surface-variant font-body-md hover:bg-surface-container-high transition-colors">Snacks</button>
+<button class="whitespace-nowrap px-6 py-2 rounded-full bg-surface-container border border-outline-variant text-on-surface-variant font-body-md hover:bg-surface-container-high transition-colors">My Recipes</button>
+<button class="whitespace-nowrap px-6 py-2 rounded-full bg-surface-container border border-outline-variant text-on-surface-variant font-body-md hover:bg-surface-container-high transition-colors">Favorites</button>
+</div>
+</section>
+<!-- Bento Recipe Grid -->
+<div class="recipe-grid gap-gutter">
+<!-- Food Card 1 -->
+<div class="group bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A vibrant, high-resolution food photograph of a fresh Buddha bowl on a clean white surface. The bowl contains quinoa, roasted sweet potatoes, sliced avocado, chickpeas, and fresh kale, drizzled with a light tahini dressing. The lighting is bright and airy, typical of high-end culinary photography, emphasizing the vibrant greens and oranges of the healthy meal." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCJGbWwOvB3asKI2TilP73MgUGkgmqEMdztC0b3nOEOHTVQzcj31jRLmWMQz1D7oQ5AbvDx7NxSkEdJi3KvdjjTHezB-QsGtp97Wte2OdhyCUV2aMMRrY6bZG03idfVZVeDQzVylirwBFeWfYtcPJMLGp9FJmBGP1OqlTyst0OshZYWl4TBFH1vKNad4Z1wIivA3Td2mZa88__IZxp51LbZKlbxkBQIH2PI12BrcbfQnv-wFFVum69uFNAjh2b49pvxhgYnlAdwuk"/>
+<div class="absolute top-3 right-3 bg-white/90 backdrop-blur-md px-2 py-1 rounded-lg flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-data-mono text-[11px] text-on-surface">4.8</span>
+</div>
+</div>
+<div class="p-4 space-y-3">
+<div>
+<span class="font-label-caps text-label-caps text-primary mb-1 block">LUNCH • 450 KCAL</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Harvest Grain Bowl</h3>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<div class="bg-surface-container rounded-lg p-2 text-center">
+<span class="font-label-caps text-[10px] block text-on-surface-variant">PROTEIN</span>
+<span class="font-data-mono text-body-sm text-on-surface">18g</span>
+</div>
+<div class="bg-surface-container rounded-lg p-2 text-center">
+<span class="font-label-caps text-[10px] block text-on-surface-variant">CARBS</span>
+<span class="font-data-mono text-body-sm text-on-surface">52g</span>
+</div>
+<div class="bg-surface-container rounded-lg p-2 text-center">
+<span class="font-label-caps text-[10px] block text-on-surface-variant">FAT</span>
+<span class="font-data-mono text-body-sm text-on-surface">24g</span>
+</div>
+</div>
+<button class="w-full py-3 bg-primary text-on-primary rounded-xl font-body-md flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all" onclick="openLogSelector('Harvest Grain Bowl')">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+                        Log Now
+                    </button>
+</div>
+</div>
+<!-- Food Card 2 -->
+<div class="group bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A top-down, gourmet close-up of a rustic Margherita pizza with charred crust, fresh mozzarella pearls, and bright basil leaves. The lighting is warm and inviting, highlighting the textures of the dough and the glistening melted cheese. The overall aesthetic is rich and vibrant, set against a dark wooden tabletop background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBD0STv1JVb7wsnZQzrHo9rSf6gkdpLnnH1t1CAQXQeYmuhfM3Q0nyhD0dqZE_t6cRyMUYo0CUhkCYf_ewrG13Tzx38BW8GN8SNUZyuqIq64NR-OVORYfZ6P8TZPLf4-VDzup5-DIC0Cs0WX38D43Ej8rm3Ura0o7qQA07So-UCIIQseVXM6G09c_GXFN5iBGbEfeSx7uf70BVJam5NzgWsQldiO62DkKvPobsPbmoTs-oDepdoAat6eTLKW_ry1WWzVMzMEkAWWCM"/>
+</div>
+<div class="p-4 space-y-3">
+<div>
+<span class="font-label-caps text-label-caps text-secondary mb-1 block">DINNER • 680 KCAL</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Artisan Pesto Pizza</h3>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<div class="bg-surface-container rounded-lg p-2 text-center">
+<span class="font-label-caps text-[10px] block text-on-surface-variant">PROTEIN</span>
+<span class="font-data-mono text-body-sm text-on-surface">24g</span>
+</div>
+<div class="bg-surface-container rounded-lg p-2 text-center">
+<span class="font-label-caps text-[10px] block text-on-surface-variant">CARBS</span>
+<span class="font-data-mono text-body-sm text-on-surface">85g</span>
+</div>
+<div class="bg-surface-container rounded-lg p-2 text-center">
+<span class="font-label-caps text-[10px] block text-on-surface-variant">FAT</span>
+<span class="font-data-mono text-body-sm text-on-surface">18g</span>
+</div>
+</div>
+<button class="w-full py-3 bg-primary text-on-primary rounded-xl font-body-md flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all" onclick="openLogSelector('Artisan Pesto Pizza')">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+                        Log Now
+                    </button>
+</div>
+</div>
+<!-- Food Card 3 -->
+<div class="group bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A professional food photograph of a smoked salmon avocado toast on sourdough bread, garnished with microgreens and chili flakes. The image has a clean, high-key lighting setup with a soft bokeh background that highlights the freshness of the ingredients. The colors are natural and vibrant, emphasizing a healthy lifestyle brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVNra65avgD8Eub60a_VFm5_lgmaTPux7qSshSodqL0VfNWYjqHJ-nDcjMZGOA5JDxCs5ityoz4urI3uik2wM70SlVTcy2EEi1rpyamT_NDECKg6k_NfU3vuQ-ecap6yBBozQdjNrqof2-Oi04tu_PL63MH7WbXPN-OBRyzhDcvLvO237qd_Egr8A7UDD1Pq8IGqxgVBqVAACxebj7Tudj31IwU0KN2P4BM-3xwkURfzQ0U9HP3s4hfCkJM1yIlaV1zWYrCHvxKgU"/>
+</div>
+<div class="p-4 space-y-3">
+<div>
+<span class="font-label-caps text-label-caps text-tertiary mb-1 block">BREAKFAST • 320 KCAL</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Salmon Avocado Toast</h3>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<div class="bg-surface-container rounded-lg p-2 text-center">
+<span class="font-label-caps text-[10px] block text-on-surface-variant">PROTEIN</span>
+<span class="font-data-mono text-body-sm text-on-surface">16g</span>
+</div>
+<div class="bg-surface-container rounded-lg p-2 text-center">
+<span class="font-label-caps text-[10px] block text-on-surface-variant">CARBS</span>
+<span class="font-data-mono text-body-sm text-on-surface">22g</span>
+</div>
+<div class="bg-surface-container rounded-lg p-2 text-center">
+<span class="font-label-caps text-[10px] block text-on-surface-variant">FAT</span>
+<span class="font-data-mono text-body-sm text-on-surface">19g</span>
+</div>
+</div>
+<button class="w-full py-3 bg-primary text-on-primary rounded-xl font-body-md flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all" onclick="openLogSelector('Salmon Avocado Toast')">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+                        Log Now
+                    </button>
+</div>
+</div>
+<!-- Food Card 4 (My Recipe) -->
+<div class="group bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A beautifully composed flat-lay photograph of a fresh Greek salad with feta cheese, Kalamata olives, cucumbers, and cherry tomatoes, seasoned with dried oregano. The lighting is bright and natural, casting soft shadows on a light marble background. The presentation is professional and clean, capturing a high-end wellness aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFlpEgVR1uP8psrT_WsoZnIzvx0vH_khRS9iOQxSm3ukHABITeYeSrYIb1nJ59RWjjeXYNBaBH4i0Ogh2b8bI7wQ89lYm2Qo0HDDo_qnrCOe2tEyJPkKMVyBHGYCABgm598jVn5LuwfIComkAhyCpoaVvT-2gnLKiMTF9qhCggnJpWZZiMEIgaZuFLXTxGWC-b9mQxEcDOpnSIJi8bmuH5nVKPMNS1rNNreRd0OWA1XBOaJqiZOyOrswLmOgR13tbjRGQNpTcIt2A"/>
+<div class="absolute top-3 left-3 bg-secondary-container/90 backdrop-blur-md px-2 py-1 rounded-lg flex items-center gap-1 shadow-sm border border-outline-variant">
+<span class="font-label-caps text-[10px] text-on-secondary-container">MY RECIPE</span>
+</div>
+</div>
+<div class="p-4 space-y-3">
+<div>
+<span class="font-label-caps text-label-caps text-primary mb-1 block">LUNCH • 210 KCAL</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Alex's Greek Classic</h3>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<div class="bg-surface-container rounded-lg p-2 text-center">
+<span class="font-label-caps text-[10px] block text-on-surface-variant">PROTEIN</span>
+<span class="font-data-mono text-body-sm text-on-surface">6g</span>
+</div>
+<div class="bg-surface-container rounded-lg p-2 text-center">
+<span class="font-label-caps text-[10px] block text-on-surface-variant">CARBS</span>
+<span class="font-data-mono text-body-sm text-on-surface">14g</span>
+</div>
+<div class="bg-surface-container rounded-lg p-2 text-center">
+<span class="font-label-caps text-[10px] block text-on-surface-variant">FAT</span>
+<span class="font-data-mono text-body-sm text-on-surface">15g</span>
+</div>
+</div>
+<button class="w-full py-3 bg-primary text-on-primary rounded-xl font-body-md flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all" onclick="openLogSelector('Alex\'s Greek Classic')">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+                        Log Now
+                    </button>
+</div>
+</div>
+<!-- Food Card 5 -->
+<div class="group bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A delicious fruit and nut snack plate with apple slices, almonds, and dark chocolate pieces, presented on a minimalist ceramic plate. The lighting is soft and warm, emphasizing the natural textures of the ingredients. The background is a clean, modern kitchen setting with soft-focus elements, projecting a calm and healthy snack time." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoFx4OoOH7GPMDkop_ggfdqOxWrriplwXlnoxkNt-LTKOTbPkUBDu4GwdLN2FO9m3kujiw_usse-EfL1H2G1_sZE36v24pHLQRxdMjwHh3AgAS8bsdM8ZU9HiUu3ls_tyA_viiMKMmQ7hVJbEBA93F_V8tho_nz3VUO8GIRXstlTWOVv_f1cePwyxISrO3BYAznvVqaXU-c3L6n621PDVH6S8XnhfS_QcSbEpYXVQ6XDH1WGHfD17YLBpcgdkQmbuwOy43BvTB9I4"/>
+</div>
+<div class="p-4 space-y-3">
+<div>
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-1 block">SNACK • 180 KCAL</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Power Nut Mix</h3>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<div class="bg-surface-container rounded-lg p-2 text-center">
+<span class="font-label-caps text-[10px] block text-on-surface-variant">PROTEIN</span>
+<span class="font-data-mono text-body-sm text-on-surface">5g</span>
+</div>
+<div class="bg-surface-container rounded-lg p-2 text-center">
+<span class="font-label-caps text-[10px] block text-on-surface-variant">CARBS</span>
+<span class="font-data-mono text-body-sm text-on-surface">12g</span>
+</div>
+<div class="bg-surface-container rounded-lg p-2 text-center">
+<span class="font-label-caps text-[10px] block text-on-surface-variant">FAT</span>
+<span class="font-data-mono text-body-sm text-on-surface">14g</span>
+</div>
+</div>
+<button class="w-full py-3 bg-primary text-on-primary rounded-xl font-body-md flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all" onclick="openLogSelector('Power Nut Mix')">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+                        Log Now
+                    </button>
+</div>
+</div>
+<!-- Food Card 6 -->
+<div class="group bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A warm, steaming bowl of vegetable lentil soup served with a slice of whole-grain bread. The scene is cozy and nourishing, with soft, directional light highlighting the steam and the rich textures of the lentils and carrots. The background is a dark, moody tabletop that gives the image a high-end, artisanal feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7Ft69tT5vlxk7BDp7Vw33zhUCtpeZAliF2AE2fICFprU9V8QB3guaquZZoZKU9PcPiouQlAibomomX4yon2Yoy8I4wVaFK6qknraZEDaYVJKG8RJMzAYXW20uL22nv2GugSj_nUvFl5YhaMcPyAKzNIw-U7gRYkWel7wV2sfobhfgqeExFvN9uhUTdgOPIn_rbFpnlD-CwHHroG8kCIjxTKMj51W6v9Nv7PDMCzmp78dJ1N8w9kQsvX9Wtw6KGjsSDzlhHZoMucw"/>
+</div>
+<div class="p-4 space-y-3">
+<div>
+<span class="font-label-caps text-label-caps text-secondary mb-1 block">DINNER • 380 KCAL</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Red Lentil Comfort</h3>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<div class="bg-surface-container rounded-lg p-2 text-center">
+<span class="font-label-caps text-[10px] block text-on-surface-variant">PROTEIN</span>
+<span class="font-data-mono text-body-sm text-on-surface">22g</span>
+</div>
+<div class="bg-surface-container rounded-lg p-2 text-center">
+<span class="font-label-caps text-[10px] block text-on-surface-variant">CARBS</span>
+<span class="font-data-mono text-body-sm text-on-surface">48g</span>
+</div>
+<div class="bg-surface-container rounded-lg p-2 text-center">
+<span class="font-label-caps text-[10px] block text-on-surface-variant">FAT</span>
+<span class="font-data-mono text-body-sm text-on-surface">6g</span>
+</div>
+</div>
+<button class="w-full py-3 bg-primary text-on-primary rounded-xl font-body-md flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all" onclick="openLogSelector('Red Lentil Comfort')">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+                        Log Now
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Meal Category Selector (Hidden Overlay) -->
+<div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-on-background/40 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300" id="mealSelector">
+<div class="bg-surface-container-lowest rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl scale-90 transition-transform duration-300" id="selectorContent">
+<div class="p-6 border-b border-outline-variant">
+<div class="flex justify-between items-center mb-1">
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Log Meal</h4>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-on-surface" onclick="closeLogSelector()">close</button>
+</div>
+<p class="font-body-md text-primary font-bold" id="selectedFoodName">Harvest Grain Bowl</p>
+</div>
+<div class="p-2 space-y-1">
+<button class="w-full flex items-center justify-between p-4 hover:bg-surface-container rounded-2xl transition-colors">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">wb_sunny</span>
+<span class="font-body-md text-on-surface">Breakfast</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-4 hover:bg-surface-container rounded-2xl transition-colors">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">light_mode</span>
+<span class="font-body-md text-on-surface">Lunch</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-4 hover:bg-surface-container rounded-2xl transition-colors">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">dark_mode</span>
+<span class="font-body-md text-on-surface">Dinner</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-4 hover:bg-surface-container rounded-2xl transition-colors">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">restaurant_menu</span>
+<span class="font-body-md text-on-surface">Snacks</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+</div>
+<div class="p-6 bg-surface-container-low">
+<button class="w-full py-3 bg-surface border border-outline-variant text-on-surface rounded-xl font-body-md hover:bg-surface-container-high transition-colors" onclick="closeLogSelector()">
+                    Cancel
+                </button>
+</div>
+</div>
+</div>
+<!-- Navigation Bar -->
+<nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-md border-t border-outline-variant flex justify-around items-center h-20 w-full px-2">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-label-caps text-label-caps">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">restaurant</span>
+<span class="font-label-caps text-label-caps">Log</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-label-caps text-label-caps">Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-caps text-label-caps">Wallet</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-caps text-label-caps">Profile</span>
+</a>
+</nav>
+<script>
+        function openLogSelector(foodName) {
+            const selector = document.getElementById('mealSelector');
+            const content = document.getElementById('selectorContent');
+            const foodLabel = document.getElementById('selectedFoodName');
+            
+            foodLabel.innerText = foodName;
+            selector.classList.remove('opacity-0', 'pointer-events-none');
+            content.classList.remove('scale-90');
+            content.classList.add('scale-100');
+        }
+
+        function closeLogSelector() {
+            const selector = document.getElementById('mealSelector');
+            const content = document.getElementById('selectorContent');
+            
+            selector.classList.add('opacity-0', 'pointer-events-none');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-90');
+        }
+
+        // Close on clicking outside
+        document.getElementById('mealSelector').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLogSelector();
+            }
+        });
+    </script>
+</body></html>

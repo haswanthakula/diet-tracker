@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OptimaFlow - Habit Tracker</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=JetBrains+Mono:wght@100..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-container": "#6cf8bb",
+                    "primary": "#3525cd",
+                    "surface-tint": "#4d44e3",
+                    "inverse-on-surface": "#eaf1ff",
+                    "tertiary-fixed": "#ffdbcc",
+                    "surface-container-highest": "#d3e4fe",
+                    "surface-dim": "#cbdbf5",
+                    "inverse-primary": "#c3c0ff",
+                    "on-background": "#0b1c30",
+                    "on-primary-container": "#dad7ff",
+                    "on-tertiary-fixed-variant": "#7b2f00",
+                    "background": "#f8f9ff",
+                    "surface-container-low": "#eff4ff",
+                    "secondary-fixed-dim": "#4edea3",
+                    "on-error-container": "#93000a",
+                    "tertiary": "#7e3000",
+                    "inverse-surface": "#213145",
+                    "surface-variant": "#d3e4fe",
+                    "on-primary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed-dim": "#ffb695",
+                    "on-secondary-fixed": "#002113",
+                    "surface-container-high": "#dce9ff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-error": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed-variant": "#3323cc",
+                    "on-secondary-container": "#00714d",
+                    "outline": "#777587",
+                    "on-primary-fixed": "#0f0069",
+                    "surface-bright": "#f8f9ff",
+                    "secondary-fixed": "#6ffbbe",
+                    "error": "#ba1a1a",
+                    "secondary": "#006c49",
+                    "surface-container": "#e5eeff",
+                    "on-tertiary-fixed": "#351000",
+                    "on-secondary": "#ffffff",
+                    "primary-container": "#4f46e5",
+                    "on-secondary-fixed-variant": "#005236",
+                    "surface": "#f8f9ff",
+                    "primary-fixed-dim": "#c3c0ff",
+                    "on-surface": "#0b1c30",
+                    "on-surface-variant": "#464555",
+                    "tertiary-container": "#a44100",
+                    "outline-variant": "#c7c4d8",
+                    "primary-fixed": "#e2dfff",
+                    "on-tertiary-container": "#ffd2be"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "base": "4px",
+                    "container-padding": "24px",
+                    "stack-sm": "8px",
+                    "stack-lg": "32px",
+                    "gutter": "16px",
+                    "stack-md": "16px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Geist"],
+                    "headline-lg-mobile": ["Geist"],
+                    "headline-md": ["Geist"],
+                    "headline-sm": ["Geist"],
+                    "body-md": ["Geist"],
+                    "display-lg": ["Geist"],
+                    "body-lg": ["Geist"],
+                    "data-mono": ["JetBrains Mono"],
+                    "label-caps": ["Geist"]
+            },
+            "fontSize": {
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["30px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "data-mono": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Geist', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .heatmap-grid { display: grid; grid-template-columns: repeat(20, 1fr); gap: 2px; }
+        .heatmap-cell { aspect-ratio: 1; border-radius: 2px; }
+        .glass-panel { backdrop-filter: blur(12px); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl flex justify-between items-center px-container-padding h-16 w-full border-b border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant">
+<img alt="User Profile" data-alt="A professional studio portrait of a young man with a serene expression, set against a soft neutral background. The lighting is high-key and clean, reflecting a minimalist and modern corporate aesthetic. The overall mood is one of calm discipline and focus, aligning with a high-performance productivity brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQtlmVGhBQjmmjVYe7Hg1axT3vv2qFZXww594bQVLQgGseVg7kos-v-12U-rak1WAEPDJHQXqjhXATvUcx4FwbUnwTGiG4LZFPYlsPFntBV63Ojbu-WJ6qWORLBYm7wQSeYb55addpfvoJXQTTw3gUz2atI3ocUic2ZrDvMetqMRUGOQco-ypG2e9mY3zC6ou2seXSPqr1plrx7DPnsSAl8UjtTy-ubAQ9EtXaWjS-5U3-zqaIlSzAvzCH_lzI_ZXnsv3wM_wa_uE"/>
+</div>
+<span class="font-headline-md text-headline-md font-bold text-primary">OptimaFlow</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="hover:opacity-80 transition-opacity active:scale-95 duration-100 text-primary">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="hover:opacity-80 transition-opacity active:scale-95 duration-100 text-primary">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+<!-- Side Navigation (Desktop) -->
+<aside class="hidden md:flex fixed left-0 top-16 bottom-0 w-64 flex-col py-6 bg-surface-container-low border-r border-outline-variant">
+<nav class="flex-1 space-y-1">
+<div class="px-6 mb-4">
+<h3 class="text-label-caps font-label-caps text-on-surface-variant">MODULES</h3>
+</div>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">nutrition</span>
+<span class="font-body-md text-body-md">Diet Tracker</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">check_circle</span>
+<span class="font-body-md text-body-md">Task Manager</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-body-md text-body-md">Finance Hub</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 bg-secondary-container text-on-secondary-container font-bold rounded-full mx-3" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-body-md text-body-md">Habit Tracker</span>
+</a>
+</nav>
+<div class="px-6 pt-6 mt-auto border-t border-outline-variant">
+<p class="font-label-caps text-label-caps text-outline uppercase">Premium Plan</p>
+<p class="font-body-md text-body-md font-bold mt-1">Alex Rivers</p>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 pt-20 pb-28 px-container-padding min-h-screen">
+<!-- Header Section -->
+<section class="mb-8">
+<h1 class="font-headline-md text-headline-md text-on-surface">Daily Resilience</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">86% Completion Rate this week</p>
+</section>
+<!-- Global Heatmap Bento Card -->
+<section class="mb-gutter">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md shadow-sm">
+<div class="flex justify-between items-center mb-stack-md">
+<div>
+<span class="font-label-caps text-label-caps text-outline">YEARLY DENSITY</span>
+<h2 class="font-headline-sm text-headline-sm">Consistency Map</h2>
+</div>
+<div class="flex gap-2">
+<div class="w-3 h-3 rounded-sm bg-surface-container"></div>
+<div class="w-3 h-3 rounded-sm bg-primary/30"></div>
+<div class="w-3 h-3 rounded-sm bg-primary/60"></div>
+<div class="w-3 h-3 rounded-sm bg-primary"></div>
+</div>
+</div>
+<div class="overflow-x-auto hide-scrollbar">
+<div class="flex gap-[2px] min-w-max pb-2">
+<!-- Heatmap columns generated via JS for demonstration -->
+<div class="grid grid-flow-col grid-rows-7 gap-[3px]" id="global-heatmap">
+<!-- Cells will be injected here -->
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Habits List -->
+<section class="grid grid-cols-1 xl:grid-cols-2 gap-gutter">
+<!-- Habit Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 flex flex-col gap-4 hover:shadow-md transition-shadow group">
+<div class="flex justify-between items-start">
+<div class="flex gap-4">
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">water_drop</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm">Hydration Goal</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">3.5L Daily Intake</p>
+</div>
+</div>
+<div class="text-right">
+<span class="font-data-mono text-data-mono text-tertiary-container bg-tertiary-fixed px-2 py-1 rounded">🔥 12 DAYS</span>
+<div class="mt-2 flex justify-end">
+<button class="w-10 h-6 bg-surface-container rounded-full relative transition-colors duration-200" onclick="this.classList.toggle('bg-primary'); this.classList.toggle('text-white')">
+<span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 translate-x-0 group-active:scale-95"></span>
+</button>
+</div>
+</div>
+</div>
+<div class="heatmap-grid pt-2 border-t border-outline-variant/30">
+<!-- Mini Heatmap Cells -->
+<div class="heatmap-cell bg-primary"></div>
+<div class="heatmap-cell bg-primary"></div>
+<div class="heatmap-cell bg-primary/80"></div>
+<div class="heatmap-cell bg-primary"></div>
+<div class="heatmap-cell bg-surface-container"></div>
+<div class="heatmap-cell bg-primary"></div>
+<div class="heatmap-cell bg-primary"></div>
+<div class="heatmap-cell bg-primary/40"></div>
+<div class="heatmap-cell bg-primary"></div>
+<div class="heatmap-cell bg-primary"></div>
+<div class="heatmap-cell bg-primary"></div>
+<div class="heatmap-cell bg-primary"></div>
+<div class="heatmap-cell bg-primary/60"></div>
+<div class="heatmap-cell bg-primary"></div>
+<div class="heatmap-cell bg-primary"></div>
+<div class="heatmap-cell bg-primary"></div>
+<div class="heatmap-cell bg-surface-container"></div>
+<div class="heatmap-cell bg-primary"></div>
+<div class="heatmap-cell bg-primary"></div>
+<div class="heatmap-cell bg-primary"></div>
+</div>
+</div>
+<!-- Habit Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 flex flex-col gap-4 hover:shadow-md transition-shadow group">
+<div class="flex justify-between items-start">
+<div class="flex gap-4">
+<div class="w-12 h-12 rounded-xl bg-secondary-container/20 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm">Morning Routine</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">20min Mobility &amp; Stretching</p>
+</div>
+</div>
+<div class="text-right">
+<span class="font-data-mono text-data-mono text-secondary bg-secondary-fixed px-2 py-1 rounded">🔥 45 DAYS</span>
+<div class="mt-2 flex justify-end">
+<button class="w-10 h-6 bg-surface-container rounded-full relative transition-colors duration-200" onclick="this.classList.toggle('bg-primary'); this.querySelector('span').classList.toggle('translate-x-4')">
+<span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 translate-x-0 group-active:scale-95"></span>
+</button>
+</div>
+</div>
+</div>
+<div class="heatmap-grid pt-2 border-t border-outline-variant/30">
+<!-- Mini Heatmap Cells -->
+<div class="heatmap-cell bg-secondary"></div>
+<div class="heatmap-cell bg-secondary"></div>
+<div class="heatmap-cell bg-secondary"></div>
+<div class="heatmap-cell bg-secondary"></div>
+<div class="heatmap-cell bg-secondary"></div>
+<div class="heatmap-cell bg-secondary"></div>
+<div class="heatmap-cell bg-secondary"></div>
+<div class="heatmap-cell bg-secondary"></div>
+<div class="heatmap-cell bg-secondary"></div>
+<div class="heatmap-cell bg-secondary"></div>
+<div class="heatmap-cell bg-secondary"></div>
+<div class="heatmap-cell bg-secondary"></div>
+<div class="heatmap-cell bg-secondary"></div>
+<div class="heatmap-cell bg-secondary"></div>
+<div class="heatmap-cell bg-secondary"></div>
+<div class="heatmap-cell bg-secondary"></div>
+<div class="heatmap-cell bg-secondary"></div>
+<div class="heatmap-cell bg-secondary"></div>
+<div class="heatmap-cell bg-secondary"></div>
+<div class="heatmap-cell bg-secondary"></div>
+</div>
+</div>
+<!-- Habit Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 flex flex-col gap-4 hover:shadow-md transition-shadow group">
+<div class="flex justify-between items-start">
+<div class="flex gap-4">
+<div class="w-12 h-12 rounded-xl bg-tertiary-container/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">book_2</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm">Deep Work</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">No phone for 2 hours</p>
+</div>
+</div>
+<div class="text-right">
+<span class="font-data-mono text-data-mono text-on-surface-variant bg-surface-container px-2 py-1 rounded">🔥 3 DAYS</span>
+<div class="mt-2 flex justify-end">
+<button class="w-10 h-6 bg-surface-container rounded-full relative transition-colors duration-200" onclick="this.classList.toggle('bg-primary'); this.querySelector('span').classList.toggle('translate-x-4')">
+<span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 translate-x-0 group-active:scale-95"></span>
+</button>
+</div>
+</div>
+</div>
+<div class="heatmap-grid pt-2 border-t border-outline-variant/30">
+<div class="heatmap-cell bg-surface-container"></div>
+<div class="heatmap-cell bg-surface-container"></div>
+<div class="heatmap-cell bg-tertiary"></div>
+<div class="heatmap-cell bg-tertiary"></div>
+<div class="heatmap-cell bg-tertiary"></div>
+<div class="heatmap-cell bg-surface-container"></div>
+<div class="heatmap-cell bg-surface-container"></div>
+<div class="heatmap-cell bg-tertiary/20"></div>
+<div class="heatmap-cell bg-surface-container"></div>
+<div class="heatmap-cell bg-surface-container"></div>
+<div class="heatmap-cell bg-surface-container"></div>
+<div class="heatmap-cell bg-surface-container"></div>
+<div class="heatmap-cell bg-surface-container"></div>
+<div class="heatmap-cell bg-surface-container"></div>
+<div class="heatmap-cell bg-surface-container"></div>
+<div class="heatmap-cell bg-surface-container"></div>
+<div class="heatmap-cell bg-surface-container"></div>
+<div class="heatmap-cell bg-surface-container"></div>
+<div class="heatmap-cell bg-surface-container"></div>
+<div class="heatmap-cell bg-surface-container"></div>
+</div>
+</div>
+<!-- New Habit CTA -->
+<button class="border-2 border-dashed border-outline-variant rounded-xl p-5 flex items-center justify-center gap-2 text-on-surface-variant hover:border-primary hover:text-primary transition-all">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-body-md text-body-md font-bold">Add New Habit</span>
+</button>
+</section>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-md flex justify-around items-center h-20 w-full px-2 border-t border-outline-variant">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-label-caps text-label-caps">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined">restaurant</span>
+<span class="font-label-caps text-label-caps">Log</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-label-caps text-label-caps">Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-label-caps text-label-caps">Habits</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-caps text-label-caps">Profile</span>
+</a>
+</nav>
+<!-- Floating Action Button -->
+<button class="fixed bottom-24 right-6 md:bottom-12 md:right-12 w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center active:scale-90 transition-transform z-40">
+<span class="material-symbols-outlined text-[32px]">edit</span>
+</button>
+<script>
+        // Generate Heatmap Cells for the global consistency map
+        const heatmap = document.getElementById('global-heatmap');
+        const rows = 7;
+        const cols = 45; // Approx 300+ days viewable
+
+        for (let i = 0; i < rows * cols; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'w-3 h-3 rounded-[2px]';
+            
+            // Randomize density for visual effect
+            const rand = Math.random();
+            if (rand > 0.8) {
+                cell.classList.add('bg-primary');
+            } else if (rand > 0.5) {
+                cell.classList.add('bg-primary/60');
+            } else if (rand > 0.3) {
+                cell.classList.add('bg-primary/30');
+            } else {
+                cell.classList.add('bg-surface-container');
+            }
+            heatmap.appendChild(cell);
+        }
+
+        // Toggle micro-interaction for switch
+        document.querySelectorAll('button[onclick*="translate-x"]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const dot = btn.querySelector('span');
+                dot.classList.toggle('translate-x-4');
+            });
+        });
+    </script>
+</body></html>

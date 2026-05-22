@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=JetBrains+Mono:wght@100..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-container": "#6cf8bb",
+                        "primary": "#3525cd",
+                        "surface-tint": "#4d44e3",
+                        "inverse-on-surface": "#eaf1ff",
+                        "tertiary-fixed": "#ffdbcc",
+                        "surface-container-highest": "#d3e4fe",
+                        "surface-dim": "#cbdbf5",
+                        "inverse-primary": "#c3c0ff",
+                        "on-background": "#0b1c30",
+                        "on-primary-container": "#dad7ff",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "background": "#f8f9ff",
+                        "surface-container-low": "#eff4ff",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#7e3000",
+                        "inverse-surface": "#213145",
+                        "surface-variant": "#d3e4fe",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "on-secondary-fixed": "#002113",
+                        "surface-container-high": "#dce9ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "on-secondary-container": "#00714d",
+                        "outline": "#777587",
+                        "on-primary-fixed": "#0f0069",
+                        "surface-bright": "#f8f9ff",
+                        "secondary-fixed": "#6ffbbe",
+                        "error": "#ba1a1a",
+                        "secondary": "#006c49",
+                        "surface-container": "#e5eeff",
+                        "on-tertiary-fixed": "#351000",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#4f46e5",
+                        "on-secondary-fixed-variant": "#005236",
+                        "surface": "#f8f9ff",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "on-surface": "#0b1c30",
+                        "on-surface-variant": "#464555",
+                        "tertiary-container": "#a44100",
+                        "outline-variant": "#c7c4d8",
+                        "primary-fixed": "#e2dfff",
+                        "on-tertiary-container": "#ffd2be"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "container-padding": "24px",
+                        "stack-sm": "8px",
+                        "stack-lg": "32px",
+                        "gutter": "16px",
+                        "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "headline-sm": ["Geist"],
+                        "body-md": ["Geist"],
+                        "display-lg": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "data-mono": ["JetBrains Mono"],
+                        "label-caps": ["Geist"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["30px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "data-mono": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Geist', sans-serif;
+            background-color: #f8f9ff;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+        }
+        .metric-card {
+            background-color: white;
+            border: 1px solid #e5e7eb; /* neutral-200 equivalent */
+            transition: all 0.2s ease;
+        }
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant flex justify-between items-center px-container-padding h-16">
+<div class="flex items-center gap-stack-sm">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container">
+<img alt="Alex Rivers" class="w-full h-full object-cover" data-alt="A professional studio portrait of a modern man with a disciplined and calm expression. He is shot against a soft, high-key white background that matches a minimalist UI aesthetic. The lighting is diffused and professional, highlighting his clear complexion. The overall mood is one of focused productivity and personal wellness, reflecting a data-driven lifestyle." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAN1t7APU3JgaJXaqwfUw7MSI76m3iFCfOA3D9qCHy68kdoRCbUM2P7YnSoELa08muQdEKvnfLVcWbTyvMvYOYThh8vBp6khd8S2O0ilaV2wAqElJAm2HhThFleAJa7dJoqepSoJEyIRYhliRADYO2v84bw2a7h0LdhV51SKdH8nQlwxEZATGJnI3UtWxJE9NCbJ0QOGK666F7H1THvl5v90ldxaBqITIzI-lJZoDZb44Dk5DFTHq_8bicmq0vVQm70GAnenvsXkcI"/>
+</div>
+<span class="font-headline-md text-headline-md font-bold text-primary">OptimaFlow</span>
+</div>
+<button class="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 duration-100">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</header>
+<main class="pt-24 pb-32 px-container-padding max-w-5xl mx-auto">
+<!-- Header Profile Section -->
+<section class="mb-stack-lg animate-in fade-in slide-in-from-bottom-4 duration-700">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-stack-md">
+<div>
+<h1 class="font-display-lg text-display-lg text-on-surface">Alex Rivers</h1>
+<div class="flex items-center gap-stack-sm mt-1">
+<span class="font-body-lg text-body-lg text-on-surface-variant">28 years old</span>
+<span class="h-1 w-1 rounded-full bg-outline-variant"></span>
+<span class="font-body-lg text-body-lg text-primary font-semibold">Premium Member</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="bg-primary text-on-primary px-6 py-2 rounded-xl font-body-md text-body-md font-bold hover:opacity-90 active:scale-95 transition-all">
+                        Update All Data
+                    </button>
+</div>
+</div>
+</section>
+<!-- Bento Grid Metrics -->
+<div class="bento-grid">
+<!-- Current Status High Level -->
+<div class="col-span-12 md:col-span-8 metric-card p-6 rounded-xl flex flex-col justify-between">
+<div class="flex justify-between items-start mb-6">
+<div>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Current Body Stats</span>
+<h2 class="font-headline-sm text-headline-sm mt-1">Metabolic Baseline</h2>
+</div>
+<button class="p-2 hover:bg-surface-container rounded-lg transition-colors group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">edit</span>
+</button>
+</div>
+<div class="grid grid-cols-2 gap-stack-lg">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-1">HEIGHT</span>
+<div class="flex items-baseline gap-1">
+<span class="font-display-lg text-display-lg text-on-surface">182</span>
+<span class="font-body-md text-body-md text-on-surface-variant">cm</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-1">WEIGHT</span>
+<div class="flex items-baseline gap-1">
+<span class="font-display-lg text-display-lg text-on-surface">76.4</span>
+<span class="font-body-md text-body-md text-on-surface-variant">kg</span>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-secondary"></div>
+<span class="font-body-sm text-body-sm">BMI: 23.1 (Healthy Range)</span>
+</div>
+<span class="font-data-mono text-data-mono text-on-surface-variant">LAST UPDATED: 2 DAYS AGO</span>
+</div>
+</div>
+<!-- Target Goal Card -->
+<div class="col-span-12 md:col-span-4 bg-primary text-on-primary p-6 rounded-xl relative overflow-hidden flex flex-col justify-between">
+<!-- Background Pattern -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+<div class="z-10">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-on-primary-container uppercase">Primary Objective</span>
+<button class="p-2 hover:bg-white/10 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-on-primary">edit</span>
+</button>
+</div>
+<h3 class="font-headline-md text-headline-md mt-2">Lean Muscle Gain</h3>
+</div>
+<div class="z-10 mt-6">
+<div class="flex justify-between text-on-primary/80 mb-2">
+<span class="font-body-sm text-body-sm">Progress to 80kg</span>
+<span class="font-body-sm text-body-sm">42%</span>
+</div>
+<div class="w-full h-2 bg-white/20 rounded-full overflow-hidden">
+<div class="bg-secondary-container h-full w-[42%] rounded-full"></div>
+</div>
+</div>
+<div class="z-10 mt-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">trending_up</span>
+<span class="font-body-sm text-body-sm">Target: +0.5kg / week</span>
+</div>
+</div>
+<!-- Diet Preference Card -->
+<div class="col-span-12 md:col-span-4 metric-card p-6 rounded-xl">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Dietary Strategy</span>
+<button class="p-2 hover:bg-surface-container rounded-lg transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">edit</span>
+</button>
+</div>
+<div class="flex items-center gap-3 mb-4">
+<div class="w-10 h-10 rounded-xl bg-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary">nutrition</span>
+</div>
+<div>
+<p class="font-body-lg text-body-lg font-bold">Intermittent Fasting</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">16:8 Protocol</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-container-high px-3 py-1 rounded-full font-label-caps text-label-caps text-on-surface-variant">GLUTEN-FREE</span>
+<span class="bg-surface-container-high px-3 py-1 rounded-full font-label-caps text-label-caps text-on-surface-variant">HIGH-PROTEIN</span>
+</div>
+</div>
+<!-- Macros Card -->
+<div class="col-span-12 md:col-span-8 metric-card p-6 rounded-xl">
+<div class="flex justify-between items-start mb-6">
+<div>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Daily Target Macros</span>
+<h2 class="font-headline-sm text-headline-sm mt-1">2,850 kcal</h2>
+</div>
+<button class="p-2 hover:bg-surface-container rounded-lg transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">edit</span>
+</button>
+</div>
+<div class="grid grid-cols-3 gap-stack-md">
+<div class="space-y-2">
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-body-sm font-semibold">Protein</span>
+<span class="font-data-mono text-data-mono">180g</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[45%]"></div>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant block text-right">35%</span>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-body-sm font-semibold">Carbs</span>
+<span class="font-data-mono text-data-mono">310g</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[40%]"></div>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant block text-right">45%</span>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-body-sm font-semibold">Fats</span>
+<span class="font-data-mono text-data-mono">75g</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="bg-tertiary-container h-full w-[25%]"></div>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant block text-right">20%</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 bg-surface/90 backdrop-blur-md border-t border-outline-variant pb-safe flex justify-around items-center h-20 px-2">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-colors active:scale-90" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-label-caps text-label-caps mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-colors active:scale-90" href="#">
+<span class="material-symbols-outlined">restaurant</span>
+<span class="font-label-caps text-label-caps mt-1">Log</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-colors active:scale-90" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-label-caps text-label-caps mt-1">Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-colors active:scale-90" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-caps text-label-caps mt-1">Wallet</span>
+</a>
+<!-- Active: Profile -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-label-caps text-label-caps mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for cards
+        document.querySelectorAll('.metric-card').forEach(card => {
+            card.addEventListener('mousedown', () => {
+                card.style.transform = 'scale(0.98) translateY(0px)';
+            });
+            card.addEventListener('mouseup', () => {
+                card.style.transform = 'scale(1.0) translateY(-2px)';
+            });
+        });
+    </script>
+</body></html>

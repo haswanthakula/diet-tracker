@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=JetBrains+Mono:wght@100..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-container": "#6cf8bb",
+                        "primary": "#3525cd",
+                        "surface-tint": "#4d44e3",
+                        "inverse-on-surface": "#eaf1ff",
+                        "tertiary-fixed": "#ffdbcc",
+                        "surface-container-highest": "#d3e4fe",
+                        "surface-dim": "#cbdbf5",
+                        "inverse-primary": "#c3c0ff",
+                        "on-background": "#0b1c30",
+                        "on-primary-container": "#dad7ff",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "background": "#f8f9ff",
+                        "surface-container-low": "#eff4ff",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#7e3000",
+                        "inverse-surface": "#213145",
+                        "surface-variant": "#d3e4fe",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "on-secondary-fixed": "#002113",
+                        "surface-container-high": "#dce9ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "on-secondary-container": "#00714d",
+                        "outline": "#777587",
+                        "on-primary-fixed": "#0f0069",
+                        "surface-bright": "#f8f9ff",
+                        "secondary-fixed": "#6ffbbe",
+                        "error": "#ba1a1a",
+                        "secondary": "#006c49",
+                        "surface-container": "#e5eeff",
+                        "on-tertiary-fixed": "#351000",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#4f46e5",
+                        "on-secondary-fixed-variant": "#005236",
+                        "surface": "#f8f9ff",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "on-surface": "#0b1c30",
+                        "on-surface-variant": "#464555",
+                        "tertiary-container": "#a44100",
+                        "outline-variant": "#c7c4d8",
+                        "primary-fixed": "#e2dfff",
+                        "on-tertiary-container": "#ffd2be"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "container-padding": "24px",
+                        "stack-sm": "8px",
+                        "stack-lg": "32px",
+                        "gutter": "16px",
+                        "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "headline-sm": ["Geist"],
+                        "body-md": ["Geist"],
+                        "display-lg": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "data-mono": ["JetBrains Mono"],
+                        "label-caps": ["Geist"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["30px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "data-mono": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- Top App Bar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant flex justify-between items-center px-container-padding h-16 w-full">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="user_profile_photo" class="w-full h-full object-cover" data-alt="A professional studio portrait of a modern business professional with a kind expression. The lighting is soft and high-key, emphasizing a clean, light-mode aesthetic. The background is a minimalist, neutral studio grey that complements the sophisticated Indigo and white color palette of the UI. The overall mood is approachable, organized, and high-performance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFRGXO-MVztpeJ0aLzXZKNMdX_uly8UTXBWL56vNVBvK1EV4WFKrJYZuBCMbDebKqL4iC8PWnaGeumLXpxNjZEzvjNUWaE5Hmdc0gcFxKPF-WAaRgSy92w-9FYMiv3jEH-SGBRWrEnBOYPrOba0e_TD2P1VKOhBV0ytJjv3Q7w1NUgCYpdgTHi_2mJ_GcgSFv_JIJLqYrXocgDgobi34sd0CBFsSbjgHdnYaQOS63jIRA88dr4CvJOYccscwZsHi82wCow557q1uo"/>
+</div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary">OptimaFlow</h1>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 duration-100" data-icon="settings">settings</button>
+</header>
+<main class="pt-24 pb-32 px-container-padding max-w-5xl mx-auto space-y-stack-lg">
+<!-- Greeting & Priority Section -->
+<section class="space-y-stack-md">
+<div class="flex flex-col gap-1">
+<span class="text-label-caps font-label-caps text-on-surface-variant uppercase tracking-widest">Tuesday, Oct 24</span>
+<h2 class="font-display-lg text-display-lg text-on-surface">Hello, Alex.</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg">You have <span class="text-primary font-bold">3 priority tasks</span> remaining for today. Focus on the quarterly review first.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Priority Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-stack-md rounded-xl shadow-sm hover:shadow-md transition-shadow group cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<span class="px-2 py-1 bg-primary-container/10 text-primary text-label-caps font-label-caps rounded-full">HIGH PRIORITY</span>
+<span class="material-symbols-outlined text-primary" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm mb-1 group-hover:text-primary transition-colors">Quarterly Revenue Review</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant mb-4">Analyze Q3 performance metrics and prepare visualization slides.</p>
+<div class="flex items-center gap-2 text-data-mono font-data-mono text-outline">
+<span class="material-symbols-outlined text-[16px]" data-icon="schedule">schedule</span>
+<span>Due in 2h</span>
+</div>
+</div>
+<!-- Priority Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-stack-md rounded-xl shadow-sm hover:shadow-md transition-shadow group cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<span class="px-2 py-1 bg-secondary-container/20 text-on-secondary-container text-label-caps font-label-caps rounded-full">FINANCE</span>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="payments">payments</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm mb-1 group-hover:text-primary transition-colors">Client Invoice Approval</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant mb-4">Review and approve pending invoices for the Northshore project.</p>
+<div class="flex items-center gap-2 text-data-mono font-data-mono text-outline">
+<span class="material-symbols-outlined text-[16px]" data-icon="schedule">schedule</span>
+<span>Today</span>
+</div>
+</div>
+<!-- Priority Card 3 -->
+<div class="hidden lg:block bg-primary-container text-on-primary-container p-stack-md rounded-xl shadow-sm relative overflow-hidden">
+<div class="relative z-10">
+<h3 class="font-headline-sm text-headline-sm mb-1">Weekly Pulse</h3>
+<p class="text-body-sm font-body-sm opacity-90 mb-4">You are 15% ahead of your productivity goals this week. Keep the momentum!</p>
+<button class="bg-surface-container-lowest text-primary px-4 py-2 rounded-full font-label-caps text-label-caps hover:bg-opacity-90 transition-all">VIEW REPORT</button>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-10">
+<span class="material-symbols-outlined text-[120px]" data-icon="trending_up">trending_up</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Habits Section -->
+<section class="space-y-stack-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="auto_awesome">auto_awesome</span>
+<h2 class="font-headline-md text-headline-md">Daily Habits</h2>
+</div>
+<span class="text-primary font-data-mono text-data-mono">4/6 COMPLETED</span>
+</div>
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Habit Item -->
+<div class="flex items-center gap-4 bg-surface-container-lowest p-3 rounded-lg border border-transparent hover:border-primary/20 transition-all cursor-pointer group">
+<div class="w-10 h-10 rounded-full border-2 border-primary flex items-center justify-center bg-primary text-on-primary shadow-sm active:scale-90 transition-transform" onclick="this.classList.toggle('bg-primary'); this.classList.toggle('text-on-primary');">
+<span class="material-symbols-outlined text-[20px]" data-icon="check">check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md font-bold">Deep Work (2h)</span>
+<span class="text-label-caps text-on-surface-variant">MORNING</span>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-lowest p-3 rounded-lg border border-transparent hover:border-primary/20 transition-all cursor-pointer group">
+<div class="w-10 h-10 rounded-full border-2 border-primary flex items-center justify-center bg-primary text-on-primary shadow-sm active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[20px]" data-icon="check">check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md font-bold">Hydration (2L)</span>
+<span class="text-label-caps text-on-surface-variant">ALL DAY</span>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-lowest p-3 rounded-lg border border-transparent hover:border-primary/20 transition-all cursor-pointer group">
+<div class="w-10 h-10 rounded-full border-2 border-outline-variant flex items-center justify-center bg-transparent text-transparent hover:text-outline active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[20px]" data-icon="check">check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md font-bold">Read 20 Pages</span>
+<span class="text-label-caps text-on-surface-variant">EVENING</span>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-lowest p-3 rounded-lg border border-transparent hover:border-primary/20 transition-all cursor-pointer group">
+<div class="w-10 h-10 rounded-full border-2 border-primary flex items-center justify-center bg-primary text-on-primary shadow-sm active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[20px]" data-icon="check">check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md font-bold">Meditate (10m)</span>
+<span class="text-label-caps text-on-surface-variant">MORNING</span>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-lowest p-3 rounded-lg border border-transparent hover:border-primary/20 transition-all cursor-pointer group">
+<div class="w-10 h-10 rounded-full border-2 border-outline-variant flex items-center justify-center bg-transparent text-transparent hover:text-outline active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[20px]" data-icon="check">check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md font-bold">Inbox Zero</span>
+<span class="text-label-caps text-on-surface-variant">WORK END</span>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-lowest p-3 rounded-lg border border-transparent hover:border-primary/20 transition-all cursor-pointer group">
+<div class="w-10 h-10 rounded-full border-2 border-primary flex items-center justify-center bg-primary text-on-primary shadow-sm active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[20px]" data-icon="check">check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md font-bold">Posture Check</span>
+<span class="text-label-caps text-on-surface-variant">HOURLY</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Spending Overview Section -->
+<section class="space-y-stack-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="account_balance_wallet">account_balance_wallet</span>
+<h2 class="font-headline-md text-headline-md">Weekly Spending</h2>
+</div>
+<button class="text-primary text-label-caps font-label-caps hover:underline">DETAILS</button>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6">
+<div class="flex items-end justify-between h-48 gap-2 md:gap-6">
+<!-- Bar Chart Item -->
+<div class="flex-1 flex flex-col items-center gap-3">
+<div class="w-full bg-surface-container-high rounded-t-lg relative group overflow-hidden" style="height: 40%;">
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<span class="text-data-mono font-data-mono text-outline">MON</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3">
+<div class="w-full bg-surface-container-high rounded-t-lg relative group overflow-hidden" style="height: 65%;">
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<span class="text-data-mono font-data-mono text-outline">TUE</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3">
+<div class="w-full bg-primary rounded-t-lg relative group shadow-lg" style="height: 90%;">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface px-2 py-1 rounded text-data-mono whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">$240.00</div>
+</div>
+<span class="text-data-mono font-data-mono text-primary font-bold">WED</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3">
+<div class="w-full bg-surface-container-high rounded-t-lg relative group overflow-hidden" style="height: 50%;">
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<span class="text-data-mono font-data-mono text-outline">THU</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3">
+<div class="w-full bg-surface-container-high rounded-t-lg relative group overflow-hidden" style="height: 30%;">
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<span class="text-data-mono font-data-mono text-outline">FRI</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3">
+<div class="w-full bg-surface-container-high rounded-t-lg relative group overflow-hidden" style="height: 15%;">
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<span class="text-data-mono font-data-mono text-outline">SAT</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3">
+<div class="w-full bg-surface-container-high rounded-t-lg relative group overflow-hidden" style="height: 20%;">
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<span class="text-data-mono font-data-mono text-outline">SUN</span>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-outline-variant flex flex-wrap gap-8">
+<div>
+<p class="text-label-caps font-label-caps text-on-surface-variant mb-1">TOTAL THIS WEEK</p>
+<h4 class="text-headline-sm font-headline-sm">$1,284.50</h4>
+</div>
+<div>
+<p class="text-label-caps font-label-caps text-on-surface-variant mb-1">EST. MONTHLY</p>
+<h4 class="text-headline-sm font-headline-sm">$4,120.00</h4>
+</div>
+<div class="ml-auto flex items-center gap-2 text-secondary font-bold">
+<span class="material-symbols-outlined" data-icon="arrow_drop_down">arrow_drop_down</span>
+<span class="text-body-sm font-body-sm">4% below budget</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Nav Bar -->
+<nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-md border-t border-outline-variant flex justify-around items-center h-20 w-full px-2">
+<!-- Home (Active) -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view" data-weight="fill" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+<span class="font-label-caps text-label-caps mt-0.5">Home</span>
+</a>
+<!-- Tasks -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span class="font-label-caps text-label-caps mt-0.5">Tasks</span>
+</a>
+<!-- Habits -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="restaurant">restaurant</span>
+<span class="font-label-caps text-label-caps mt-0.5">Log</span>
+</a>
+<!-- Wallet -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-label-caps text-label-caps mt-0.5">Wallet</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-caps text-label-caps mt-0.5">Profile</span>
+</a>
+</nav>
+<!-- Floating Action Button -->
+<button class="fixed right-6 bottom-24 w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-40">
+<span class="material-symbols-outlined text-[28px]" data-icon="add">add</span>
+</button>
+<script>
+        // Micro-interactions for habit checking
+        document.querySelectorAll('.habit-item-check').forEach(item => {
+            item.addEventListener('click', function() {
+                const icon = this.querySelector('.material-symbols-outlined');
+                const parent = this.closest('.group');
+                
+                if (this.classList.contains('bg-primary')) {
+                    this.classList.remove('bg-primary', 'text-on-primary');
+                    this.classList.add('bg-transparent', 'text-transparent', 'border-outline-variant');
+                    icon.style.opacity = "0";
+                } else {
+                    this.classList.add('bg-primary', 'text-on-primary');
+                    this.classList.remove('bg-transparent', 'text-transparent', 'border-outline-variant');
+                    icon.style.opacity = "1";
+                }
+            });
+        });
+    </script>
+</body></html>
