@@ -121,6 +121,7 @@ let state = {
   editingTaskId: null,
   editingHabitId: null,
   profile: {
+    ownerName: "Alex Rivers",
     height: 175,
     weight: 70,
     targetCal: 2000,
@@ -207,6 +208,7 @@ function setupRealtimeListeners(uid) {
       state.profile = docSnap.data();
       renderProfileView();
       renderDietOverview();
+      renderHomeView();
     }
   });
   activeListeners.push(profileUnsub);
@@ -1503,6 +1505,16 @@ function renderProfileView() {
   document.getElementById("profile-weight").innerText = prof.weight;
   document.getElementById("profile-bmi").innerText = `BMI: ${bmi.value} (${bmi.category})`;
 
+  const profileUserName = document.getElementById("profile-user-name");
+  if (profileUserName) {
+    profileUserName.innerText = prof.ownerName || "Alex Rivers";
+  }
+
+  const userDisplayName = document.getElementById("user-display-name");
+  if (userDisplayName) {
+    userDisplayName.innerText = prof.ownerName || (auth.currentUser?.email ? auth.currentUser.email.split("@")[0] : "Guest User");
+  }
+
   const userMembership = document.getElementById("profile-user-membership");
   if (userMembership) {
     const isPremium = !auth.currentUser?.isAnonymous;
@@ -1551,6 +1563,7 @@ function calculateBMI(weight, height) {
 function openEditProfileModal() {
   const prof = state.profile;
 
+  document.getElementById("p-owner-name").value = prof.ownerName || "Alex Rivers";
   document.getElementById("p-height").value = prof.height || 175;
   document.getElementById("p-weight").value = prof.weight || 70;
   document.getElementById("p-goal-title").value = prof.goalTitle || "";
@@ -1602,6 +1615,7 @@ async function saveProfileForm(event) {
   }
 
   const profileData = {
+    ownerName: document.getElementById("p-owner-name").value.trim(),
     height: Number(document.getElementById("p-height").value),
     weight: Number(document.getElementById("p-weight").value),
     goalTitle: document.getElementById("p-goal-title").value.trim(),
@@ -1628,7 +1642,7 @@ window.saveProfileForm = saveProfileForm;
 // ==========================================
 function renderHomeView() {
   const todayStr = getLocalDateString();
-  const greetingName = auth.currentUser?.email ? auth.currentUser.email.split("@")[0] : "Guest";
+  const greetingName = state.profile.ownerName || (auth.currentUser?.email ? auth.currentUser.email.split("@")[0] : "Guest");
   
   const dObj = new Date();
   const dateFormatted = dObj.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
